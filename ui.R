@@ -30,11 +30,13 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                       
                       sidebarMenu(
                         menuItem("Introduction", tabName = "intro", icon = icon("file-alt")),
-                        menuItem("Data loading", tabName = "datos", icon = icon("database")),
+                        menuItem("Data loading", tabName = "data", icon = icon("database")),
                         menuItem("Genes selection", tabName = "genes", icon = icon("dna")),
-                        menuItem("Model training", tabName = "entrenamiento", icon = icon("play")),
+                        menuItem("Model training", tabName = "training", icon = icon("play")),
                         menuItem("Model validation", tabName = "validation", icon = icon("check-circle")),
-                        menuItem("Related diseases", tabName = "enfermedades", icon = icon("disease"))
+                        menuItem("Gene Ontologies", tabName = "GO", icon = icon("book-medical")),
+                        menuItem("KEGG Pathways", tabName = "kegg", icon = icon("project-diagram")),
+                        menuItem("Related diseases", tabName = "diseases", icon = icon("disease"))
                       )
                     ),
                     ## Body
@@ -79,7 +81,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         ),
                         
                         # Tab 2
-                        tabItem(tabName = "datos",
+                        tabItem(tabName = "data",
                                 
                                 # Left column
                                 fluidRow(column(6, 
@@ -162,7 +164,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         ),
                         
                         # Tab 4
-                        tabItem(tabName = "entrenamiento",
+                        tabItem(tabName = "training",
                                 h1("Model training"),
                                 
                                 # Choose feature selection algorithm
@@ -240,6 +242,21 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 plotOutput("results_validation",
                                            width = "50%")
                                 
+                        ), tabItem(tabName = "GO",
+                                   h1("Gene Ontologies"),
+                                   textInput(inputId = "gene_for_go", label = "Gene", value = "TERT", width = "50%"),
+                                   
+                                   dataTableOutput("gene_for_go_table")
+                        ), tabItem(tabName = "kegg",
+                                   h1("KEGG Pathways"),
+                                   textInput(inputId = "gene_for_go", label = "Gene", value = "TERT", width = "50%"),
+                                   
+                                   dataTableOutput("gene_for_pathways_table")
+                        ), tabItem(tabName = "diseases",
+                                   h1("Related diseases"),
+                                   textInput(inputId = "gene_for_disease", label = "Gene", value = "TERT", width = "50%"),
+                                   
+                                   dataTableOutput("gene_for_disease_table")
                         )
                       ) # Close tabs
                     ) # Close dashboard body

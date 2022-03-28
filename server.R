@@ -377,11 +377,46 @@ server <- function(input, output){
     
   })
   
+  w4 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving GOs information..."),
+                                       style="color:white;")))  
+  # Server of tab: Related GOs ------
+  output$gene_for_go_table <- renderDataTable(
+    {
+      w4$show()
+      gos <- geneOntologyEnrichment(input$gene_for_disease, geneType = "GENE_SYMBOL")
+      dis <- as.data.frame(gos$`All Ontologies GO`[,-15])
+      w4$hide()
+      
+      #names(dis) <- c("Disease", "Overall score", "Literature", "RNA Expr.", "Genetic", "Somatic Mut.", "Drug", "Animal", "Pathways")
+      return(dis)}
+    , filter = "top", options = list(pageLength = 10)
+  )
   
+  
+  w5 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving KEGG Pathways information..."),
+                                       style="color:white;")))  
+  # Server of tab: Related diseases ------
+  output$gene_for_pathways_table <- renderDataTable(
+    {
+      w5$show()
+      dis <- as.data.frame(DEGsToPathways(input$gene_for_disease))
+      w5$hide()
+
+      return(dis)}
+    , filter = "top", options = list(pageLength = 10)
+  )
+  
+  w6 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving genes information..."),
+                                       style="color:white;")))  
   # Server of tab: Related diseases ------
   output$gene_for_disease_table <- renderDataTable(
-    {dis <- as.data.frame(DEGsToDiseases(input$gene_for_disease, size = 10000))
-    
+    {
+      w6$show()
+      dis <- as.data.frame(DEGsToDiseases(input$gene_for_disease, size = 10000))
+      w6$hide()
     # Round coefficients
     for(i in 2:9){
       dis[, i] <- round(as.numeric(dis[, i]), 2)
@@ -391,5 +426,6 @@ server <- function(input, output){
     return(dis)}
     , filter = "top", options = list(pageLength = 10)
   )
+  
   
 }
