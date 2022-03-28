@@ -8,7 +8,7 @@ output:
 
 *KnowSeq Shiver* is the shiny-based web application of the [KnowSeq R/Bioc package](https://github.com/CasedUgr/KnowSeq) that allows users with no previous knowledge of programming to analyze transcriptomics data using all the functionalities available at KnowSeq.
 
-*KnowSeq Shiver* is currently available at [https://knowseqshiver.shinyapps.io/KnowSeq_ShiVer/](https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/)
+*KnowSeq Shiver* is currently available at [https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/](https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/)
 
 
 ## Citation

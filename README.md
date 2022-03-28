@@ -6,7 +6,7 @@ with no previous knowledge of programming to analyze transcriptomics
 data using all the functionalities available at KnowSeq.
 
 *KnowSeq Shiver* is currently available at
-<https://knowseqshiver.shinyapps.io/KnowSeq_ShiVer/>
+<https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/>
 
 ## Citation
 
