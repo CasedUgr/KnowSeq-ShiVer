@@ -1,0 +1,66 @@
+---
+output:
+  md_document:
+    variant: gfm
+---
+ 
+## KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package
+
+*KnowSeq Shiver* is the shiny-based web application of the [KnowSeq R/Bioc package](https://github.com/CasedUgr/KnowSeq) that allows users with no previous knowledge of programming to analyze transcriptomics data using all the functionalities available at KnowSeq.
+
+*KnowSeq Shiver* is currently available at [https://knowseqshiver.shinyapps.io/KnowSeq_Shiny/](https://knowseqshiver.shinyapps.io/KnowSeq_Shiny/)
+
+
+## Citation
+```
+Castillo-Secilla, D., Gálvez, J. M., Carrillo-Pérez, F., Verona-Almeida, M., Redondo-Sánchez, D., Ortuno, F. M., Herrera, L. J. & Rojas, I. (2021). KnowSeq R-Bioc package: The automatic smart gene expression tool for retrieving relevant biological knowledge. Computers in Biology and Medicine, 133, 104387.
+```
+
+
+## Authors 
+
+Daniel Castillo. University of Granada.
+
+Juan Manuel Gálvez. University of Granada.
+
+Francisco Carrillo-Pérez. University of Granada.
+
+Marta Verona-Almeida. University of Granada.
+
+Daniel Redondo-Sánchez. Granada Cancer Registry, ibs.GRANADA.
+
+Francisco Manuel Ortuño. Fundación Progreso y Salud (FPS), Hospital Virgen del Rocio, Sevilla.
+
+Luis Javier Herrera. University of Granada.
+
+Ignacio Rojas. University of Granada.
+
+## Contact
+
+Daniel Castillo-Secilla (cased at ugr.es) is the main developer of the R package KnowSeq.
+
+Daniel Redondo-Sánchez (daniel.redondo.easp at juntadeandalucia.es) is the main developer of this Shiny App.
+
+## Session info
+
+```{r, echo = FALSE, results=F, warning=F, message=F}
+# Load all packages used in the Shiny app
+# This won't appear in the README but is useful to display the version of the packages
+library(KnowSeq)
+library(waiter)
+library(dplyr)
+library(reshape2)
+library(caret)
+library(ggplot2)
+library(ggalluvial)
+library(waiter)
+library(shinydashboard)
+library(DT)
+library(shiny)
+library(BiocManager)
+```
+
+```{r sessionInfo, warning=F, message = F}
+library(devtools)
+devtools::session_info()
+```
