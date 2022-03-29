@@ -110,7 +110,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                 ),
                                                 
                                                 actionButton(inputId = "boton_importar",
-                                                             label = "Import file",
+                                                             label = "Import files",
                                                              icon = icon("fas fa-file-import", lib = "font-awesome"),
                                                              width = "100%"),
                                                 br(),
@@ -245,17 +245,29 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         ), tabItem(tabName = "GO",
                                    h1("Gene Ontologies"),
                                    textInput(inputId = "gene_for_go", label = "Gene", value = "TERT", width = "50%"),
-                                   
+                                   actionButton(inputId = "button_go",
+                                                label = "Retrieve gene ontologies information",
+                                                icon = icon("dna", lib = "font-awesome"),
+                                                width = "50%"),
+                                   br(),br(),
                                    dataTableOutput("gene_for_go_table")
                         ), tabItem(tabName = "kegg",
                                    h1("KEGG Pathways"),
-                                   textInput(inputId = "gene_for_go", label = "Gene", value = "TERT", width = "50%"),
-                                   
+                                   textInput(inputId = "gene_for_kegg", label = "Gene", value = "TERT", width = "50%"),
+                                   actionButton(inputId = "button_kegg",
+                                                label = "Retrieve KEGG Pathways information",
+                                                icon = icon("dna", lib = "font-awesome"),
+                                                width = "50%"),
+                                   br(),br(),
                                    dataTableOutput("gene_for_pathways_table")
                         ), tabItem(tabName = "diseases",
                                    h1("Related diseases"),
                                    textInput(inputId = "gene_for_disease", label = "Gene", value = "TERT", width = "50%"),
-                                   
+                                   actionButton(inputId = "button_disease",
+                                                label = "Retrieve related diseases",
+                                                icon = icon("dna", lib = "font-awesome"),
+                                                width = "50%"),
+                                   br(),br(),
                                    dataTableOutput("gene_for_disease_table")
                         )
                       ) # Close tabs
