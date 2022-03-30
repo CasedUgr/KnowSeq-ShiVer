@@ -167,18 +167,18 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         tabItem(tabName = "training",
                                 h1("Model training"),
                                 
-                                # Choose feature selection algorithm
-                                selectInput("fs_algorithm",
-                                            label = "Feature selection algorithm",
-                                            choices = c("mRMR", "RF", "DA"),
-                                            selected = "mRMR",
-                                            width = "50%"),
-                                
                                 # Choose classification algorithm
                                 selectInput("cl_algorithm",
                                             label = "Classification algorithm",
                                             choices = c("SVM", "RF", "kNN"),
                                             selected = "SVM",
+                                            width = "50%"),
+                                
+                                # Choose feature selection algorithm
+                                selectInput("fs_algorithm",
+                                            label = "Feature selection algorithm",
+                                            choices = c("mRMR", "RF", "DA"),
+                                            selected = "mRMR",
                                             width = "50%"),
                                 
                                 # Choose number of folds
@@ -216,16 +216,16 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         tabItem(tabName = "validation",
                                 h1("Model validation"),
                                 
-                                selectInput("fs_algorithm_validation",
-                                            label = "Feature selection algorithm:",
-                                            choices = c("mRMR", "RF", "DA"),
-                                            selected = "mRMR",
-                                            width = "50%"),
-                                
                                 selectInput("cl_algorithm_validation",
                                             label = "Classification algorithm (for SVM and kNN it must be trained first to obtain optimal parameters):",
                                             choices = c("SVM", "RF", "kNN"),
                                             selected = "SVM",
+                                            width = "50%"),
+                                
+                                selectInput("fs_algorithm_validation",
+                                            label = "Feature selection algorithm:",
+                                            choices = c("mRMR", "RF", "DA"),
+                                            selected = "mRMR",
                                             width = "50%"),
                                 
                                 sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use (must be equal or less than the number of genes selected at 'Genes selection'):",
@@ -244,7 +244,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 
                         ), tabItem(tabName = "GO",
                                    h1("Gene Ontologies"),
-                                   textInput(inputId = "gene_for_go", label = "Gene", value = "TERT", width = "50%"),
+                                   textInput(inputId = "gene_for_go", label = "Gene(s)", value = "TERT", width = "50%"),
                                    actionButton(inputId = "button_go",
                                                 label = "Retrieve gene ontologies information",
                                                 icon = icon("dna", lib = "font-awesome"),
@@ -253,7 +253,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                    dataTableOutput("gene_for_go_table")
                         ), tabItem(tabName = "kegg",
                                    h1("KEGG Pathways"),
-                                   textInput(inputId = "gene_for_kegg", label = "Gene", value = "TERT", width = "50%"),
+                                   textInput(inputId = "gene_for_kegg", label = "Gene(s)", value = "TERT", width = "50%"),
                                    actionButton(inputId = "button_kegg",
                                                 label = "Retrieve KEGG Pathways information",
                                                 icon = icon("dna", lib = "font-awesome"),
@@ -262,13 +262,21 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                    dataTableOutput("gene_for_pathways_table")
                         ), tabItem(tabName = "diseases",
                                    h1("Related diseases"),
-                                   textInput(inputId = "gene_for_disease", label = "Gene", value = "TERT", width = "50%"),
-                                   actionButton(inputId = "button_disease",
-                                                label = "Retrieve related diseases",
-                                                icon = icon("dna", lib = "font-awesome"),
-                                                width = "50%"),
-                                   br(),br(),
-                                   dataTableOutput("gene_for_disease_table")
+                                   h4("In this section we use the parameters chosen for the validation of the model."),
+                                   conditionalPanel(condition = "input.boton_model_validation==0",
+                                                    h4(tags$b("Please execute the validation of the model."))
+                                   ),
+                                   conditionalPanel(condition = "input.boton_model_validation!=0",
+                                                    h4(textOutput("genes_elegidos_finales_texto")),
+                                                    h4(tableOutput("genes_elegidos_finales")),
+                                                    br(),
+                                                    actionButton(inputId = "button_disease",
+                                                                 label = "Retrieve related diseases",
+                                                                 icon = icon("dna", lib = "font-awesome"),
+                                                                 width = "50%"),
+                                                    br(),br(),
+                                                    dataTableOutput("gene_for_disease_table")
+                                                    ),
                         )
                       ) # Close tabs
                     ) # Close dashboard body

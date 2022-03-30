@@ -423,20 +423,61 @@ server <- function(input, output){
                                        style="color:white;")))  
   # Server of tab: Related diseases ------
   
+  output$genes_elegidos_finales_texto <- renderText({
+    return(paste0("For the ", input$fs_algorithm_validation, " feature selection algorithm, ",
+            "the best ", input$numero_genes_validation, " genes were:"))
+    })
+  
+  output$genes_elegidos_finales <- renderTable({
+    if(input$fs_algorithm == "mRMR"){
+      ranking <- values$ranking[1:input$numero_genes_validation, 1]
+    }
+    
+    if(input$fs_algorithm == "RF"){
+      ranking <- values$ranking[1:input$numero_genes_validation, 2]
+    }
+    
+    if(input$fs_algorithm == "DA"){
+      ranking <- values$ranking[1:input$numero_genes_validation, 3]
+    }
+    return(ranking)
+  }, colnames = FALSE)  
+  
+  
   observeEvent(input$button_disease, {
     
     w6$show()
     
     output$gene_for_disease_table <- renderDataTable(
       {
-        dis <- as.data.frame(DEGsToDiseases(input$gene_for_disease, size = 10000))
+        
+        if(input$fs_algorithm_validation == "mRMR"){
+          ranking <- values$ranking[1:input$numero_genes_validation, 1]
+        }
+        
+        if(input$fs_algorithm_validation == "RF"){
+          ranking <- values$ranking[1:input$numero_genes_validation, 2]
+        }
+        
+        if(input$fs_algorithm_validation == "DA"){
+          ranking <- values$ranking[1:input$numero_genes_validation, 3]
+        }
+        
+        dis_list <- DEGsToDiseases(ranking, size = 10000)
+        
+        for(i in 1:length(dis_list)){
+          if(i == 1) dis <- cbind(names(dis_list)[[1]], dis_list[[1]]$summary)
+          else dis <- rbind(dis, cbind(names(dis_list)[[i]], dis_list[[i]]$summary))
+        }
+        dis <- as.data.frame(dis)
+        
         w6$hide()
         # Round coefficients
-        for(i in 2:9){
+        for(i in 3:10){
           dis[, i] <- round(as.numeric(dis[, i]), 2)
         }
         
-        names(dis) <- c("Disease", "Overall score", "Literature", "RNA Expr.", "Genetic", "Somatic Mut.", "Drug", "Animal", "Pathways")
+        names(dis) <- c("Gen", "Disease", "Overall score", "Literature", "RNA Expr.", "Genetic", "Somatic Mut.", "Drug", "Animal", "Pathways")
         return(dis)}
       , filter = "top", options = list(pageLength = 10)
     )
