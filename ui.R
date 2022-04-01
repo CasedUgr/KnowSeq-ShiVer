@@ -146,25 +146,34 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         # Tab 3
                         tabItem(tabName = "genes",
                                 h1("Genes selection"),
-                                sliderInput(inputId = "numero_genes", label = "Select the number of genes to use", value = 50, min = 1, max = 50, step = 1, width = "50%"),
-                                
-                                textInput(inputId = "disease_da", label = "Disease for DA algorithm", value = "liver cancer", width = "50%"),
-                                
-                                actionButton(inputId = "boton_genes",
-                                             label = "Select most relevant genes",
-                                             icon = icon("dna", lib = "font-awesome"),
-                                             width = "50%"),
-                                br(),
-                                br(),
-                                conditionalPanel(condition = "input.boton_genes!=0",
+                                # If data is loaded, you can proceed
+                                conditionalPanel(condition = "input.boton_importar!=0",
                                                  
-                                                 h3("Table of more relevant genes by feature selection method:"),
-                                                 br(),
-                                                 fluidRow(
-                                                   column(4, h4(tags$b("  MRMR")), tableOutput("genes_mrmr")),
-                                                   column(4, h4(tags$b("  RF")), tableOutput("genes_rf")),
-                                                   column(4, h4(tags$b("  DA")), tableOutput("genes_da")),
-                                                 )
+                                  sliderInput(inputId = "numero_genes", label = "Select the number of genes to use", value = 50, min = 1, max = 50, step = 1, width = "50%"),
+                                  
+                                  textInput(inputId = "disease_da", label = "Disease for DA algorithm", value = "liver cancer", width = "50%"),
+                                  
+                                  actionButton(inputId = "boton_genes",
+                                               label = "Select most relevant genes",
+                                               icon = icon("dna", lib = "font-awesome"),
+                                               width = "50%"),
+                                  br(),
+                                  br(),
+                                  conditionalPanel(condition = "input.boton_genes!=0",
+                                                   
+                                                   h3("Table of more relevant genes by feature selection method:"),
+                                                   br(),
+                                                   fluidRow(
+                                                     column(4, h4(tags$b("  MRMR")), tableOutput("genes_mrmr")),
+                                                     column(4, h4(tags$b("  RF")), tableOutput("genes_rf")),
+                                                     column(4, h4(tags$b("  DA")), tableOutput("genes_da")),
+                                                   )
+                                )
+                                
+                        ),
+                                # If not, the app tells you to load data 
+                                conditionalPanel(condition = "input.boton_importar==0",
+                                                 h3("First you need to load data in ''Data loading''", style = "color: #D95032")
                                 )
                         ),
                         
@@ -172,48 +181,57 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         tabItem(tabName = "training",
                                 h1("Model training"),
                                 
-                                # Choose classification algorithm
-                                selectInput("cl_algorithm",
-                                            label = "Classification algorithm",
-                                            choices = c("SVM", "RF", "kNN"),
-                                            selected = "SVM",
-                                            width = "50%"),
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
+                                                 
+                                  # Choose classification algorithm
+                                  selectInput("cl_algorithm",
+                                              label = "Classification algorithm",
+                                              choices = c("SVM", "RF", "kNN"),
+                                              selected = "SVM",
+                                              width = "50%"),
+                                  
+                                  # Choose feature selection algorithm
+                                  selectInput("fs_algorithm",
+                                              label = "Feature selection algorithm",
+                                              choices = c("mRMR", "RF", "DA"),
+                                              selected = "mRMR",
+                                              width = "50%"),
+                                  
+                                  # Choose number of folds
+                                  selectInput("number_folds",
+                                              label = "Number of folds",
+                                              choices = c(3, 5, 10),
+                                              selected = 5,
+                                              width = "50%"),
+                                  
+                                  # Train model button
+                                  actionButton(inputId = "boton_model_training",
+                                               label 
+                                               = "Train model",
+                                               icon = icon("play", lib = "font-awesome"),
+                                               width = "50%"),
+                                  
+                                  br(),
+                                  br(),
+                                  
+                                  # Show optimal parameters (if the classification method is SVM or kNN)
+                                  conditionalPanel(condition = "input.cl_algorithm == 'SVM'",
+                                                   br(),
+                                                   textOutput("optimal_svm"),
+                                                   br()),
+                                  conditionalPanel(condition = "input.cl_algorithm == 'kNN'",
+                                                   br(),
+                                                   textOutput("optimal_knn"),
+                                                   br()),
+                                  
+                                  dataTableOutput("results_cv")
+                                ),
                                 
-                                # Choose feature selection algorithm
-                                selectInput("fs_algorithm",
-                                            label = "Feature selection algorithm",
-                                            choices = c("mRMR", "RF", "DA"),
-                                            selected = "mRMR",
-                                            width = "50%"),
-                                
-                                # Choose number of folds
-                                selectInput("number_folds",
-                                            label = "Number of folds",
-                                            choices = c(3, 5, 10),
-                                            selected = 5,
-                                            width = "50%"),
-                                
-                                # Train model button
-                                actionButton(inputId = "boton_model_training",
-                                             label 
-                                             = "Train model",
-                                             icon = icon("play", lib = "font-awesome"),
-                                             width = "50%"),
-                                
-                                br(),
-                                br(),
-                                
-                                # Show optimal parameters (if the classification method is SVM or kNN)
-                                conditionalPanel(condition = "input.cl_algorithm == 'SVM'",
-                                                 br(),
-                                                 textOutput("optimal_svm"),
-                                                 br()),
-                                conditionalPanel(condition = "input.cl_algorithm == 'kNN'",
-                                                 br(),
-                                                 textOutput("optimal_knn"),
-                                                 br()),
-                                
-                                dataTableOutput("results_cv")
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                                 h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
                                 
                         ),
                         
@@ -221,36 +239,45 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         tabItem(tabName = "validation",
                                 h1("Model validation"),
                                 
-                                selectInput("cl_algorithm_validation",
-                                            label = "Classification algorithm (for SVM and kNN it must be trained first to obtain optimal parameters):",
-                                            choices = c("SVM", "RF", "kNN"),
-                                            selected = "SVM",
-                                            width = "50%"),
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
+                                  selectInput("cl_algorithm_validation",
+                                              label = "Classification algorithm (for SVM and kNN it must be trained first to obtain optimal parameters):",
+                                              choices = c("SVM", "RF", "kNN"),
+                                              selected = "SVM",
+                                              width = "50%"),
+                                  
+                                  selectInput("fs_algorithm_validation",
+                                              label = "Feature selection algorithm:",
+                                              choices = c("mRMR", "RF", "DA"),
+                                              selected = "mRMR",
+                                              width = "50%"),
+                                  
+                                  sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use (must be equal or less than the number of genes selected at 'Genes selection'):",
+                                              value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                  
+                                  actionButton(inputId = "boton_model_validation",
+                                               label = "Validate model in test",
+                                               icon = icon("play", lib = "font-awesome"),
+                                               width = "50%"),
+                                  
+                                  br(),
+                                  br(),
+                                  
+                                  plotOutput("results_validation",
+                                             width = "50%")
+                                ),
                                 
-                                selectInput("fs_algorithm_validation",
-                                            label = "Feature selection algorithm:",
-                                            choices = c("mRMR", "RF", "DA"),
-                                            selected = "mRMR",
-                                            width = "50%"),
-                                
-                                sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use (must be equal or less than the number of genes selected at 'Genes selection'):",
-                                            value = 10, min = 1, max = 50, step = 1, width = "50%"),
-                                
-                                actionButton(inputId = "boton_model_validation",
-                                             label = "Validate model in test",
-                                             icon = icon("play", lib = "font-awesome"),
-                                             width = "50%"),
-                                
-                                br(),
-                                br(),
-                                
-                                plotOutput("results_validation",
-                                           width = "50%")
-                                
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                                 h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
                         ),
                         # Tab 6
                         tabItem(tabName = "GO",
-                                   h1("Gene Ontologies"),
+                                h1("Gene Ontologies"),
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
                                 selectInput("fs_algorithm_go",
                                             label = "Feature selection algorithm",
                                             choices = c("mRMR", "RF", "DA"),
@@ -261,50 +288,70 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 textOutput("genes_for_go_text"), br(),
                                 tableOutput("genes_for_go_table"),
                                  actionButton(inputId = "button_go",
-                                              label = "Retrieve KEGG Pathways  information",
+                                              label = "Retrieve gene ontologies information",
                                               icon = icon("dna", lib = "font-awesome"),
                                               width = "50%"),
                                  br(),br(),
                                  dataTableOutput("genes_for_go_datatable")
+                                ),
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                                 h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
                         ),
                         # Tab 7
                         tabItem(tabName = "kegg",
                                    h1("KEGG Pathways"),
-                                selectInput("fs_algorithm_kegg",
-                                            label = "Feature selection algorithm",
-                                            choices = c("mRMR", "RF", "DA"),
-                                            selected = "mRMR",
-                                            width = "50%"),
-                                sliderInput(inputId = "number_genes_kegg", label = "Number of genes",
-                                            value = 1, min = 1, max = 50, step = 1, width = "50%"),
-                                textOutput("genes_for_kegg_text"), br(),
-                                tableOutput("genes_for_kegg_table"),
-                                actionButton(inputId = "button_kegg",
-                                             label = "Retrieve gene ontologies information",
-                                             icon = icon("dna", lib = "font-awesome"),
-                                             width = "50%"),
-                                br(),br(),
-                                dataTableOutput("genes_for_kegg_datatable")
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
+                                  selectInput("fs_algorithm_kegg",
+                                              label = "Feature selection algorithm",
+                                              choices = c("mRMR", "RF", "DA"),
+                                              selected = "mRMR",
+                                              width = "50%"),
+                                  sliderInput(inputId = "number_genes_kegg", label = "Number of genes",
+                                              value = 1, min = 1, max = 50, step = 1, width = "50%"),
+                                  textOutput("genes_for_kegg_text"), br(),
+                                  tableOutput("genes_for_kegg_table"),
+                                  actionButton(inputId = "button_kegg",
+                                               label = "Retrieve KEGG Pathways information",
+                                               icon = icon("dna", lib = "font-awesome"),
+                                               width = "50%"),
+                                  br(),br(),
+                                  dataTableOutput("genes_for_kegg_datatable")
+                                ),
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                                 h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
                         ),
                         # Tab 8
                         tabItem(tabName = "diseases",
                                    h1("Related diseases"),
-                                   selectInput("fs_algorithm_disease",
-                                               label = "Feature selection algorithm",
-                                               choices = c("mRMR", "RF", "DA"),
-                                               selected = "mRMR",
-                                               width = "50%"),
-                                   sliderInput(inputId = "number_genes_disease", label = "Number of genes",
-                                               value = 10, min = 1, max = 50, step = 1, width = "50%"),
-                                   textOutput("genes_for_disease_text"), br(),
-                                   tableOutput("genes_for_disease_table"),
-                                   actionButton(inputId = "button_disease",
+
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
+                                       selectInput("fs_algorithm_disease",
+                                                   label = "Feature selection algorithm",
+                                                   choices = c("mRMR", "RF", "DA"),
+                                                   selected = "mRMR",
+                                                   width = "50%"),
+                                       sliderInput(inputId = "number_genes_disease", label = "Number of genes",
+                                                   value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                       textOutput("genes_for_disease_text"), br(),
+                                       tableOutput("genes_for_disease_table"),
+                                       actionButton(inputId = "button_disease",
                                                label = "Retrieve related diseases",
                                                icon = icon("dna", lib = "font-awesome"),
                                                width = "50%"),
                                    br(),br(),
-                                   dataTableOutput("genes_for_disease_datatable"),
-                        )
+                                   dataTableOutput("genes_for_disease_datatable")),
+                                
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                        h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
+                          )
                       ) # Close tabs
                     ) # Close dashboard body
 ) # Close dashboard page
