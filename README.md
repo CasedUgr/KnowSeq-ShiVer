@@ -22,7 +22,7 @@ Francisco Carrillo-Pérez. University of Granada.
 
 Marta Verona-Almeida. University of Granada.
 
-Daniel Redondo-Sánchez. Granada Cancer Registry, ibs.GRANADA.
+Daniel Redondo-Sánchez. ibs.GRANADA, CIBERESP, EASP.
 
 Francisco Manuel Ortuño. Fundación Progreso y Salud (FPS), Hospital
 Virgen del Rocio, Sevilla.
@@ -56,7 +56,7 @@ devtools::session_info()
     ##  collate  Spanish_Spain.1252
     ##  ctype    Spanish_Spain.1252
     ##  tz       Europe/Paris
-    ##  date     2022-03-28
+    ##  date     2022-04-01
     ##  pandoc   2.17.1.1 @ C:/Program Files/RStudio/bin/quarto/bin/ (via rmarkdown)
     ## 
     ## - Packages -------------------------------------------------------------------
@@ -93,12 +93,12 @@ devtools::session_info()
     ##  devtools         * 2.4.3      2021-11-30 [1] CRAN (R 4.1.3)
     ##  digest             0.6.29     2021-12-01 [2] CRAN (R 4.1.2)
     ##  dplyr            * 1.0.8      2022-02-08 [2] CRAN (R 4.1.2)
-    ##  DT               * 0.21       2022-02-26 [2] CRAN (R 4.1.2)
+    ##  DT               * 0.22       2022-03-28 [2] CRAN (R 4.1.3)
     ##  e1071              1.7-9      2021-09-16 [2] CRAN (R 4.1.0)
     ##  edgeR              3.36.0     2021-10-26 [1] Bioconductor
     ##  ellipsis           0.3.2      2021-04-29 [2] CRAN (R 4.0.5)
     ##  evaluate           0.15       2022-02-18 [2] CRAN (R 4.1.2)
-    ##  fansi              1.0.2      2022-01-14 [1] CRAN (R 4.1.3)
+    ##  fansi              1.0.3      2022-03-24 [1] CRAN (R 4.1.3)
     ##  fastmap            1.1.0      2021-01-25 [2] CRAN (R 4.0.2)
     ##  foreach            1.5.2      2022-02-02 [2] CRAN (R 4.1.2)
     ##  foreign            0.8-82     2022-01-13 [2] CRAN (R 4.1.2)
@@ -153,7 +153,7 @@ devtools::session_info()
     ##  mime               0.12       2021-09-28 [2] CRAN (R 4.1.0)
     ##  ModelMetrics       1.2.2.2    2020-03-17 [2] CRAN (R 4.0.2)
     ##  munsell            0.5.0      2018-06-12 [2] CRAN (R 4.0.2)
-    ##  nlme               3.1-155    2022-01-13 [1] CRAN (R 4.1.3)
+    ##  nlme               3.1-157    2022-03-25 [1] CRAN (R 4.1.3)
     ##  nnet               7.3-17     2022-01-13 [2] CRAN (R 4.1.2)
     ##  nor1mix          * 1.3-0      2019-06-13 [2] CRAN (R 4.0.2)
     ##  parallelly         1.30.0     2021-12-17 [2] CRAN (R 4.1.2)
@@ -161,13 +161,13 @@ devtools::session_info()
     ##  pkgbuild           1.3.1      2021-12-20 [2] CRAN (R 4.1.2)
     ##  pkgconfig          2.0.3      2019-09-22 [2] CRAN (R 4.0.2)
     ##  pkgload            1.2.4      2021-11-30 [2] CRAN (R 4.1.2)
-    ##  plyr               1.8.6      2020-03-03 [1] CRAN (R 4.1.3)
+    ##  plyr               1.8.7      2022-03-24 [1] CRAN (R 4.1.3)
     ##  png                0.1-7      2013-12-03 [2] CRAN (R 4.0.0)
     ##  praznik            10.0.0     2021-11-09 [2] CRAN (R 4.1.2)
     ##  preprocessCore   * 1.56.0     2021-10-26 [2] Bioconductor
     ##  prettyunits        1.1.1      2020-01-24 [2] CRAN (R 4.0.2)
     ##  pROC               1.18.0     2021-09-03 [2] CRAN (R 4.1.1)
-    ##  processx           3.5.2      2021-04-30 [1] CRAN (R 4.1.3)
+    ##  processx           3.5.3      2022-03-25 [1] CRAN (R 4.1.3)
     ##  prodlim            2019.11.13 2019-11-17 [2] CRAN (R 4.0.2)
     ##  promises           1.2.0.1    2021-02-11 [2] CRAN (R 4.0.3)
     ##  proxy              0.4-26     2021-06-07 [2] CRAN (R 4.0.5)
@@ -180,7 +180,7 @@ devtools::session_info()
     ##  R6                 2.5.1      2021-08-19 [2] CRAN (R 4.1.0)
     ##  randomForest       4.7-1      2022-02-03 [2] CRAN (R 4.1.2)
     ##  RColorBrewer       1.1-2      2014-12-07 [2] CRAN (R 4.0.0)
-    ##  Rcpp               1.0.8      2022-01-13 [1] CRAN (R 4.1.3)
+    ##  Rcpp               1.0.8.3    2022-03-17 [1] CRAN (R 4.1.3)
     ##  RCurl              1.98-1.6   2022-02-08 [2] CRAN (R 4.1.2)
     ##  recipes            0.2.0      2022-02-18 [2] CRAN (R 4.1.2)
     ##  remotes            2.4.2      2021-11-30 [2] CRAN (R 4.1.2)
@@ -217,8 +217,5 @@ devtools::session_info()
     ##  XVector            0.34.0     2021-10-26 [1] Bioconductor
     ##  yaml               2.3.5      2022-02-21 [2] CRAN (R 4.1.2)
     ##  zlibbioc           1.40.0     2021-10-26 [1] Bioconductor
-    ## 
-    ##  [1] C:/Users/dredondo/Documents/R/win-library/4.1
-    ##  [2] C:/Users/dredondo/Documents/R/R-4.1.0/library
     ## 
     ## ------------------------------------------------------------------------------
