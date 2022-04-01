@@ -50,34 +50,39 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         tabItem(tabName = "intro",
                                 
                                 h1("KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package"),
-                                tags$i("KnowSeq Shiver"), "is the shiny-based web application of the KnowSeq R/Bioc package that 
-                                allows users with no previous knowledge of programming to analyze transcriptomics
+                                tags$i("KnowSeq Shiver"), "is the shiny-based web application of the ",
+                                tags$a("KnowSeq R/Bioc package", href = "https://github.com/CasedUgr/KnowSeq", target = "_blank"),
+                                " that allows users with no previous knowledge of programming to analyze transcriptomics
                                 data using all the functionalities available at KnowSeq.",
-                                br(), br(),
+                                br(),
                                 
-                                h1("Citation"),
+                                h2("Citation"),
                                 tags$article("Castillo-Secilla, D., Gálvez, J. M., Carrillo-Pérez, F., Verona-Almeida, M., Redondo-Sánchez, D., Ortuno, F. M., Herrera, L. J. & Rojas, I. (2021). KnowSeq R-Bioc package: The automatic smart gene expression tool for retrieving relevant biological knowledge. Computers in Biology and Medicine, 133, 104387."),
                                 
-                                h1("Authors"),
+                                h2("Code"),
+                                "The code of this web application is available on ", tags$a("GitHub", href = "https://github.com/CasedUgr/KnowSeq-ShiVer", target="_blank"), ".",
+                                
+                                
+                                h2("Authors"),
                                 tags$p(
                                   tags$li("Daniel Castillo. University of Granada."), br(),
                                   tags$li("Juan Manuel Gálvez. University of Granada."), br(),
                                   tags$li("Francisco Carrillo-Pérez. University of Granada."), br(),
                                   tags$li("Marta Verona-Almeida. University of Granada."), br(),
-                                  tags$li("Daniel Redondo-Sánchez. Granada Cancer Registry, ibs.GRANADA."), br(),
+                                  tags$li("Daniel Redondo-Sánchez. ibs.GRANADA, CIBERESP, EASP."), br(),
                                   tags$li("Francisco Manuel Ortuño. Fundación Progreso y Salud (FPS), Hospital Virgen del Rocio, Sevilla."), br(),
                                   tags$li("Luis Javier Herrera. University of Granada."), br(),
-                                  tags$li("Ignacio Rojas. University of Granada.",)),
+                                  tags$li("Ignacio Rojas. University of Granada.")),
                                 
-                                h1("Contact"),
+                                h2("Contact"),
                                 "Daniel Castillo-Secilla (cased at ugr.es) is the main developer of the R package KnowSeq.", br(),
                                 "Daniel Redondo-Sánchez (daniel.redondo.easp at juntadeandalucia.es) is the main developer of this Shiny App.", br(),
                                 
                                 # Images
                                 br(), br(), br(),
-                                fluidRow(column(6, tags$img(src = "images/ugr.png", height = "120px")),
-                                         column(6, tags$img(src = "images/knowseq.png", height = "120px"))),
-                                
+                                fluidRow(column(4, tags$img(src = "images/ugr.png", height = "120px")),
+                                         column(4, br(), br(), tags$img(src = "images/ibs.jpg", height = "40px")),
+                                         column(4, tags$img(src = "images/knowseq.png", height = "120px"))),
                         ),
                         
                         # Tab 2
@@ -242,41 +247,63 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 plotOutput("results_validation",
                                            width = "50%")
                                 
-                        ), tabItem(tabName = "GO",
+                        ),
+                        # Tab 6
+                        tabItem(tabName = "GO",
                                    h1("Gene Ontologies"),
-                                   textInput(inputId = "gene_for_go", label = "Gene(s)", value = "TERT", width = "50%"),
-                                   actionButton(inputId = "button_go",
-                                                label = "Retrieve gene ontologies information",
-                                                icon = icon("dna", lib = "font-awesome"),
-                                                width = "50%"),
-                                   br(),br(),
-                                   dataTableOutput("gene_for_go_table")
-                        ), tabItem(tabName = "kegg",
+                                selectInput("fs_algorithm_go",
+                                            label = "Feature selection algorithm",
+                                            choices = c("mRMR", "RF", "DA"),
+                                            selected = "mRMR",
+                                            width = "50%"),
+                                sliderInput(inputId = "number_genes_go", label = "Number of genes",
+                                            value = 1, min = 1, max = 50, step = 1, width = "50%"),
+                                textOutput("genes_for_go_text"), br(),
+                                tableOutput("genes_for_go_table"),
+                                 actionButton(inputId = "button_go",
+                                              label = "Retrieve KEGG Pathways  information",
+                                              icon = icon("dna", lib = "font-awesome"),
+                                              width = "50%"),
+                                 br(),br(),
+                                 dataTableOutput("genes_for_go_datatable")
+                        ),
+                        # Tab 7
+                        tabItem(tabName = "kegg",
                                    h1("KEGG Pathways"),
-                                   textInput(inputId = "gene_for_kegg", label = "Gene(s)", value = "TERT", width = "50%"),
-                                   actionButton(inputId = "button_kegg",
-                                                label = "Retrieve KEGG Pathways information",
-                                                icon = icon("dna", lib = "font-awesome"),
-                                                width = "50%"),
-                                   br(),br(),
-                                   dataTableOutput("gene_for_pathways_table")
-                        ), tabItem(tabName = "diseases",
+                                selectInput("fs_algorithm_kegg",
+                                            label = "Feature selection algorithm",
+                                            choices = c("mRMR", "RF", "DA"),
+                                            selected = "mRMR",
+                                            width = "50%"),
+                                sliderInput(inputId = "number_genes_kegg", label = "Number of genes",
+                                            value = 1, min = 1, max = 50, step = 1, width = "50%"),
+                                textOutput("genes_for_kegg_text"), br(),
+                                tableOutput("genes_for_kegg_table"),
+                                actionButton(inputId = "button_kegg",
+                                             label = "Retrieve gene ontologies information",
+                                             icon = icon("dna", lib = "font-awesome"),
+                                             width = "50%"),
+                                br(),br(),
+                                dataTableOutput("genes_for_kegg_datatable")
+                        ),
+                        # Tab 8
+                        tabItem(tabName = "diseases",
                                    h1("Related diseases"),
-                                   h4("In this section we use the parameters chosen for the validation of the model."),
-                                   conditionalPanel(condition = "input.boton_model_validation==0",
-                                                    h4(tags$b("Please execute the validation of the model."))
-                                   ),
-                                   conditionalPanel(condition = "input.boton_model_validation!=0",
-                                                    h4(textOutput("genes_elegidos_finales_texto")),
-                                                    h4(tableOutput("genes_elegidos_finales")),
-                                                    br(),
-                                                    actionButton(inputId = "button_disease",
-                                                                 label = "Retrieve related diseases",
-                                                                 icon = icon("dna", lib = "font-awesome"),
-                                                                 width = "50%"),
-                                                    br(),br(),
-                                                    dataTableOutput("gene_for_disease_table")
-                                                    ),
+                                   selectInput("fs_algorithm_disease",
+                                               label = "Feature selection algorithm",
+                                               choices = c("mRMR", "RF", "DA"),
+                                               selected = "mRMR",
+                                               width = "50%"),
+                                   sliderInput(inputId = "number_genes_disease", label = "Number of genes",
+                                               value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                   textOutput("genes_for_disease_text"), br(),
+                                   tableOutput("genes_for_disease_table"),
+                                   actionButton(inputId = "button_disease",
+                                               label = "Retrieve related diseases",
+                                               icon = icon("dna", lib = "font-awesome"),
+                                               width = "50%"),
+                                   br(),br(),
+                                   dataTableOutput("genes_for_disease_datatable"),
                         )
                       ) # Close tabs
                     ) # Close dashboard body

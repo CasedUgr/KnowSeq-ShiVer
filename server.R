@@ -160,6 +160,7 @@ server <- function(input, output){
     # DA method
     w <- Waiter$new(html = tagList(spin_folding_cube(),
                                    span(br(), br(), br(), h4("Running DA algorithm..."),
+                                        br(), h4("Please be patient, this can take a while..."),
                                         style="color:white;")))
     w$show()
     daRanking <- NULL
@@ -377,68 +378,146 @@ server <- function(input, output){
     
   })
   
-  w4 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                  span(br(), br(), br(), h4("Retrieving GOs information..."),
-                                       style="color:white;")))  
+
   # Server of tab: Related GOs ------
-  observeEvent(input$button_go, {
-    w4$show()
-    output$gene_for_go_table <- renderDataTable(
-      {
-        
-        gos <- geneOntologyEnrichment(input$gene_for_go, geneType = "GENE_SYMBOL")
-        dis <- as.data.frame(gos$`All Ontologies GO`[,-15])
-        w4$hide()
-        
-        #names(dis) <- c("Disease", "Overall score", "Literature", "RNA Expr.", "Genetic", "Somatic Mut.", "Drug", "Animal", "Pathways")
-        return(dis)}
-      , filter = "top", options = list(pageLength = 10)
-    )
+  
+    w4 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving GOs information..."),
+                                       br(), h4("Please be patient, this can take a while..."),
+                                       style="color:white;")))  
+  
+  output$genes_for_go_text <- renderText({
+    return(paste0("For the ", input$fs_algorithm_go, " feature selection algorithm, ",
+                  "the best ", input$number_genes_go, " genes were:"))
   })
   
-  w5 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                  span(br(), br(), br(), h4("Retrieving KEGG Pathways information..."),
-                                       style="color:white;")))  
+  output$genes_for_go_table <- renderTable({
+    if(input$fs_algorithm_go == "mRMR"){
+      ranking <- values$ranking[1:input$number_genes_go, 1]
+    }
+    
+    if(input$fs_algorithm_go == "RF"){
+      ranking <- values$ranking[1:input$number_genes_go, 2]
+    }
+    
+    if(input$fs_algorithm_go == "DA"){
+      ranking <- values$ranking[1:input$number_genes_go, 3]
+    }
+    return(ranking)
+  }, colnames = FALSE)  
+  
+  
+  observeEvent(input$button_go, {
+    
+    output$genes_for_go_datatable <- renderDataTable(
+      {
+        
+        w4$show()
+        if(input$fs_algorithm_go == "mRMR"){
+          ranking <- values$ranking[1:input$number_genes_go, 1]
+        }
+        
+        if(input$fs_algorithm_go == "RF"){
+          ranking <- values$ranking[1:input$number_genes_go, 2]
+        }
+        
+        if(input$fs_algorithm_go == "DA"){
+          ranking <- values$ranking[1:input$number_genes_go, 3]
+        }
+        
+        gos <- geneOntologyEnrichment(ranking, geneType = "GENE_SYMBOL")
+        
+        gos <- as.data.frame(gos$`All Ontologies GO`[,c(1,2,14,15)])
+        
+        w4$hide()
+        
+        return(gos)}
+      , filter = "top", options = list(pageLength = 10)
+    )
+    
+  })
+  
+
+
   # Server of tab: KEGG ------
+  
+    w5 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving KEGG Pathways information..."),
+                                       br(), h4("Please be patient, this can take a while..."),
+                                       style="color:white;")))  
+  
+  output$genes_for_kegg_text <- renderText({
+    return(paste0("For the ", input$fs_algorithm_kegg, " feature selection algorithm, ",
+                  "the best ", input$number_genes_kegg, " genes were:"))
+  })
+  
+  output$genes_for_kegg_table <- renderTable({
+    if(input$fs_algorithm_kegg == "mRMR"){
+      ranking <- values$ranking[1:input$number_genes_kegg, 1]
+    }
+    
+    if(input$fs_algorithm_kegg == "RF"){
+      ranking <- values$ranking[1:input$number_genes_kegg, 2]
+    }
+    
+    if(input$fs_algorithm_kegg == "DA"){
+      ranking <- values$ranking[1:input$number_genes_kegg, 3]
+    }
+    return(ranking)
+  }, colnames = FALSE)  
+  
   
   observeEvent(input$button_kegg, {
     
-    w3$show()
-    
-    output$gene_for_pathways_table <- renderDataTable(
+    output$genes_for_kegg_datatable <- renderDataTable(
       {
+        
         w5$show()
-        dis <- as.data.frame(DEGsToPathways(input$gene_for_kegg))
+        if(input$fs_algorithm_kegg == "mRMR"){
+          ranking <- values$ranking[1:input$number_genes_kegg, 1]
+        }
+        
+        if(input$fs_algorithm_kegg == "RF"){
+          ranking <- values$ranking[1:input$number_genes_kegg, 2]
+        }
+        
+        if(input$fs_algorithm_kegg == "DA"){
+          ranking <- values$ranking[1:input$number_genes_kegg, 3]
+        }
+        
+        kegg <- as.data.frame(DEGsToPathways(ranking))
+        
         w5$hide()
         
-        return(dis)}
+        
+        return(kegg)}
       , filter = "top", options = list(pageLength = 10)
     )
     
   })
   
-  
-  w6 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                  span(br(), br(), br(), h4("Retrieving genes information..."),
-                                       style="color:white;")))  
   # Server of tab: Related diseases ------
   
-  output$genes_elegidos_finales_texto <- renderText({
-    return(paste0("For the ", input$fs_algorithm_validation, " feature selection algorithm, ",
-            "the best ", input$numero_genes_validation, " genes were:"))
+    w6 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Retrieving genes information..."),
+                                       style="color:white;")))  
+  
+  output$genes_for_disease_text <- renderText({
+    return(paste0("For the ", input$fs_algorithm_disease, " feature selection algorithm, ",
+            "the best ", input$number_genes_disease, " genes were:"))
     })
   
-  output$genes_elegidos_finales <- renderTable({
-    if(input$fs_algorithm == "mRMR"){
-      ranking <- values$ranking[1:input$numero_genes_validation, 1]
+  output$genes_for_disease_table <- renderTable({
+    if(input$fs_algorithm_disease == "mRMR"){
+      ranking <- values$ranking[1:input$number_genes_disease, 1]
     }
     
-    if(input$fs_algorithm == "RF"){
-      ranking <- values$ranking[1:input$numero_genes_validation, 2]
+    if(input$fs_algorithm_disease == "RF"){
+      ranking <- values$ranking[1:input$number_genes_disease, 2]
     }
     
-    if(input$fs_algorithm == "DA"){
-      ranking <- values$ranking[1:input$numero_genes_validation, 3]
+    if(input$fs_algorithm_disease == "DA"){
+      ranking <- values$ranking[1:input$number_genes_disease, 3]
     }
     return(ranking)
   }, colnames = FALSE)  
@@ -448,19 +527,19 @@ server <- function(input, output){
     
     w6$show()
     
-    output$gene_for_disease_table <- renderDataTable(
+    output$genes_for_disease_datatable <- renderDataTable(
       {
         
-        if(input$fs_algorithm_validation == "mRMR"){
-          ranking <- values$ranking[1:input$numero_genes_validation, 1]
+        if(input$fs_algorithm_disease == "mRMR"){
+          ranking <- values$ranking[1:input$number_genes_disease, 1]
         }
         
-        if(input$fs_algorithm_validation == "RF"){
-          ranking <- values$ranking[1:input$numero_genes_validation, 2]
+        if(input$fs_algorithm_disease == "RF"){
+          ranking <- values$ranking[1:input$number_genes_disease, 2]
         }
         
-        if(input$fs_algorithm_validation == "DA"){
-          ranking <- values$ranking[1:input$numero_genes_validation, 3]
+        if(input$fs_algorithm_disease == "DA"){
+          ranking <- values$ranking[1:input$number_genes_disease, 3]
         }
         
         dis_list <- DEGsToDiseases(ranking, size = 10000)
