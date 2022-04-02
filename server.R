@@ -523,8 +523,8 @@ server <- function(input, output){
   }, colnames = FALSE)  
   
   
-  observeEvent(input$button_disease, {
-    
+   observeEvent(input$button_disease, {
+         
     w6$show()
     
     output$genes_for_disease_datatable <- renderDataTable(
