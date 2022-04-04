@@ -20,7 +20,7 @@ spinner <- tagList(
 
 server <- function(input, output){
   
-  values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL)
+  values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL, optimalrf_train = NULL)
   
   # Server of tab: Data loading ------
   
@@ -56,7 +56,7 @@ server <- function(input, output){
       # Message if file is correctly imported
       showModal(modalDialog(
         h3(icon("check-circle", lib = "font-awesome", class = "fa-1x"),
-           " File imported"),
+           " Files imported"),
         easyClose = TRUE,
         footer = NULL
       ))
@@ -245,6 +245,7 @@ server <- function(input, output){
     if(input$cl_algorithm == "SVM"){
       w3 <- Waiter$new(html = tagList(spin_folding_cube(),
                                       span(br(), br(), br(), h4("Training SVM algorithm..."),
+                                           br(), h4("Please be patient, this can take a while..."),
                                            style="color:white;")))  
       w3$show()
       results_cv <- svm_trn(particion.entrenamiento(), labels_train(), ranking,
@@ -256,10 +257,12 @@ server <- function(input, output){
     if(input$cl_algorithm == "RF"){
       w3 <- Waiter$new(html = tagList(spin_folding_cube(),
                                       span(br(), br(), br(), h4("Training RF algorithm..."),
+                                           br(), h4("Please be patient, this can take a while..."),
                                            style="color:white;")))  
       w3$show()
       results_cv <- rf_trn(particion.entrenamiento(), labels_train(), ranking,
                            numFold = as.numeric(input$number_folds))
+      values$optimalrf_train <- results_cv$bestParameters
       w3$hide()
     }
     
@@ -305,6 +308,8 @@ server <- function(input, output){
   
   observeEvent(input$boton_model_validation, {
     
+    output$results_validation <- renderPlot({
+      
     w3$show()
     
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
@@ -326,15 +331,15 @@ server <- function(input, output){
     w3$hide()
     
     if(input$fs_algorithm_validation == "mRMR"){
-      ranking <- values$ranking[1:input$numero_genes, 1]
+      ranking <- values$ranking[1:input$numero_genes_validation, 1]
     }
     
     if(input$fs_algorithm_validation == "RF"){
-      ranking <- values$ranking[1:input$numero_genes, 2]
+      ranking <- values$ranking[1:input$numero_genes_validation, 2]
     }
     
     if(input$fs_algorithm_validation == "DA"){
-      ranking <- values$ranking[1:input$numero_genes, 3]
+      ranking <- values$ranking[1:input$numero_genes_validation, 3]
     }
     
     if(input$cl_algorithm_validation == "SVM"){
@@ -356,7 +361,7 @@ server <- function(input, output){
       w3$show()
       results_validation <- rf_test(train = particion.entrenamiento(), labels_train(),
                                     test = particion.test(), labels_test(),
-                                    ranking)
+                                    ranking, bestParameters = values$optimalrf_train)
       w3$hide()
     }
     
@@ -371,7 +376,6 @@ server <- function(input, output){
       w3$hide()
     }
     
-    output$results_validation <- renderPlot({
       tabla <- results_validation$cfMats[[input$numero_genes_validation]]$table
       plotConfMatrix(tabla)
     })
@@ -507,7 +511,7 @@ server <- function(input, output){
             "the best ", input$number_genes_disease, " genes were:"))
     })
   
-  output$genes_for_disease_table <- renderTable({
+  output$genes_for_disease_list <- renderText({
     if(input$fs_algorithm_disease == "mRMR"){
       ranking <- values$ranking[1:input$number_genes_disease, 1]
     }
@@ -520,7 +524,27 @@ server <- function(input, output){
       ranking <- values$ranking[1:input$number_genes_disease, 3]
     }
     return(ranking)
-  }, colnames = FALSE)  
+  })  
+  
+  # Update selectInput according to the specific gen selected
+  possible_genes <- reactive({
+    if(input$fs_algorithm_disease == "mRMR"){
+      ranking <- values$ranking[1:input$number_genes_disease, 1]
+    }
+    
+    if(input$fs_algorithm_disease == "RF"){
+      ranking <- values$ranking[1:input$number_genes_disease, 2]
+    }
+    
+    if(input$fs_algorithm_disease == "DA"){
+      ranking <- values$ranking[1:input$number_genes_disease, 3]
+    }
+    return(ranking)
+  })
+  observeEvent(possible_genes(), {
+    updateSelectInput(inputId = "gen_for_disease", choices = possible_genes())
+  })
+  
   
   
    observeEvent(input$button_disease, {
@@ -529,25 +553,9 @@ server <- function(input, output){
     
     output$genes_for_disease_datatable <- renderDataTable(
       {
-        
-        if(input$fs_algorithm_disease == "mRMR"){
-          ranking <- values$ranking[1:input$number_genes_disease, 1]
-        }
-        
-        if(input$fs_algorithm_disease == "RF"){
-          ranking <- values$ranking[1:input$number_genes_disease, 2]
-        }
-        
-        if(input$fs_algorithm_disease == "DA"){
-          ranking <- values$ranking[1:input$number_genes_disease, 3]
-        }
-        
-        dis_list <- DEGsToDiseases(ranking, size = 10000)
-        
-        for(i in 1:length(dis_list)){
-          if(i == 1) dis <- cbind(names(dis_list)[[1]], dis_list[[1]]$summary)
-          else dis <- rbind(dis, cbind(names(dis_list)[[i]], dis_list[[i]]$summary))
-        }
+        dis_list <- DEGsToDiseases(input$gen_for_disease, size = 10000)
+        if(length(dis_list) != 0) dis <- cbind(input$gen_for_disease, dis_list[[1]]$summary)
+        else dis <- t(c(input$gen_for_disease, "None", rep(NA, 8)))
         dis <- as.data.frame(dis)
         
         w6$hide()
