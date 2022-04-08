@@ -280,6 +280,8 @@ server <- function(input, output){
     
     output$optimal_svm <- renderText(paste0("\nOptimal coefficients for ", input$numero_genes, " genes : cost = ", results_cv$bestParameters[1], "; gamma = ", results_cv$bestParameters[2]))
     
+    output$optimal_rf <- renderText(paste0("\nOptimal mtry for ", input$numero_genes, " genes = ", results_cv$bestParameters))
+    
     output$optimal_knn <- renderText(paste0("\nOptimal number of neighbours for ", input$numero_genes, " genes = ", results_cv$bestK))
     
     output$results_cv <- renderDataTable({
@@ -392,10 +394,10 @@ server <- function(input, output){
   
   output$genes_for_go_text <- renderText({
     return(paste0("For the ", input$fs_algorithm_go, " feature selection algorithm, ",
-                  "the best ", input$number_genes_go, " genes were:"))
+                  "the best ", input$number_genes_go, " genes are:"))
   })
   
-  output$genes_for_go_table <- renderTable({
+  output$genes_for_go_list <- renderText({
     if(input$fs_algorithm_go == "mRMR"){
       ranking <- values$ranking[1:input$number_genes_go, 1]
     }
@@ -408,7 +410,7 @@ server <- function(input, output){
       ranking <- values$ranking[1:input$number_genes_go, 3]
     }
     return(ranking)
-  }, colnames = FALSE)  
+  })  
   
   
   observeEvent(input$button_go, {
@@ -452,10 +454,10 @@ server <- function(input, output){
   
   output$genes_for_kegg_text <- renderText({
     return(paste0("For the ", input$fs_algorithm_kegg, " feature selection algorithm, ",
-                  "the best ", input$number_genes_kegg, " genes were:"))
+                  "the best ", input$number_genes_kegg, " genes are:"))
   })
   
-  output$genes_for_kegg_table <- renderTable({
+  output$genes_for_kegg_list <- renderText({
     if(input$fs_algorithm_kegg == "mRMR"){
       ranking <- values$ranking[1:input$number_genes_kegg, 1]
     }
@@ -468,7 +470,7 @@ server <- function(input, output){
       ranking <- values$ranking[1:input$number_genes_kegg, 3]
     }
     return(ranking)
-  }, colnames = FALSE)  
+  })  
   
   
   observeEvent(input$button_kegg, {
@@ -508,7 +510,7 @@ server <- function(input, output){
   
   output$genes_for_disease_text <- renderText({
     return(paste0("For the ", input$fs_algorithm_disease, " feature selection algorithm, ",
-            "the best ", input$number_genes_disease, " genes were:"))
+            "the best ", input$number_genes_disease, " genes are:"))
     })
   
   output$genes_for_disease_list <- renderText({
