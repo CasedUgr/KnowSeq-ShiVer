@@ -188,7 +188,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                   selectInput("cl_algorithm",
                                               label = "Classification algorithm",
                                               choices = c("SVM", "RF", "kNN"),
-                                              selected = "SVM",
+                                              selected = "kNN",
                                               width = "50%"),
                                   
                                   # Choose feature selection algorithm
@@ -220,6 +220,10 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                    br(),
                                                    textOutput("optimal_svm"),
                                                    br()),
+                                  conditionalPanel(condition = "input.cl_algorithm == 'RF'",
+                                                   br(),
+                                                   textOutput("optimal_rf"),
+                                                   br()),
                                   conditionalPanel(condition = "input.cl_algorithm == 'kNN'",
                                                    br(),
                                                    textOutput("optimal_knn"),
@@ -242,9 +246,9 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 # If the best genes for each feature selection algorithm are already created, you can proceed
                                 conditionalPanel(condition = "input.boton_genes!=0",
                                   selectInput("cl_algorithm_validation",
-                                              label = "Classification algorithm (for SVM and kNN it must be trained first to obtain optimal parameters):",
+                                              label = "Classification algorithm (The algorithm must be trained first to obtain optimal parameters):",
                                               choices = c("SVM", "RF", "kNN"),
-                                              selected = "SVM",
+                                              selected = "kNN",
                                               width = "50%"),
                                   
                                   selectInput("fs_algorithm_validation",
@@ -284,9 +288,9 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                             selected = "mRMR",
                                             width = "50%"),
                                 sliderInput(inputId = "number_genes_go", label = "Number of genes",
-                                            value = 1, min = 1, max = 50, step = 1, width = "50%"),
+                                            value = 2, min = 1, max = 50, step = 1, width = "50%"),
                                 textOutput("genes_for_go_text"), br(),
-                                tableOutput("genes_for_go_table"),
+                                textOutput("genes_for_go_list"),
                                  actionButton(inputId = "button_go",
                                               label = "Retrieve gene ontologies information",
                                               icon = icon("dna", lib = "font-awesome"),
@@ -310,9 +314,9 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                               selected = "mRMR",
                                               width = "50%"),
                                   sliderInput(inputId = "number_genes_kegg", label = "Number of genes",
-                                              value = 1, min = 1, max = 50, step = 1, width = "50%"),
+                                              value = 2, min = 1, max = 50, step = 1, width = "50%"),
                                   textOutput("genes_for_kegg_text"), br(),
-                                  tableOutput("genes_for_kegg_table"),
+                                  textOutput("genes_for_kegg_list"),
                                   actionButton(inputId = "button_kegg",
                                                label = "Retrieve KEGG Pathways information",
                                                icon = icon("dna", lib = "font-awesome"),
@@ -338,8 +342,18 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                    width = "50%"),
                                        sliderInput(inputId = "number_genes_disease", label = "Number of genes",
                                                    value = 10, min = 1, max = 50, step = 1, width = "50%"),
-                                       textOutput("genes_for_disease_text"), br(),
-                                       tableOutput("genes_for_disease_table"),
+
+                                       textOutput("genes_for_disease_text"),
+                                       textOutput("genes_for_disease_list"),
+                                       
+                                       br(),
+                                       
+                                       # Choose specific gen
+                                       selectInput("gen_for_disease",
+                                                   label = "Choose the gene to obtain related diseases",
+                                                   choices = NULL,
+                                                   width = "50%"),
+                                       
                                        actionButton(inputId = "button_disease",
                                                label = "Retrieve related diseases",
                                                icon = icon("dna", lib = "font-awesome"),
