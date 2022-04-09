@@ -438,7 +438,7 @@ server <- function(input, output){
         w4$hide()
         
         return(gos)}
-      , filter = "top", options = list(pageLength = 10)
+      , filter = "top", rownames = FALSE, options = list(pageLength = 10)
     )
     
   })
@@ -497,7 +497,7 @@ server <- function(input, output){
         
         
         return(kegg)}
-      , filter = "top", options = list(pageLength = 10)
+      , filter = "top", rownames = FALSE, options = list(pageLength = 10)
     )
     
   })
@@ -567,12 +567,147 @@ server <- function(input, output){
         }
         
         names(dis) <- c("Gen", "Disease", "Overall score", "Literature", "RNA Expr.", "Genetic", "Somatic Mut.", "Drug", "Animal", "Pathways")
-        return(dis)}
-      , filter = "top", options = list(pageLength = 10)
+        return(dis[, -1])}
+      , filter = "top", rownames = FALSE, options = list(pageLength = 10)
     )
     
   })
 
+   # Server of tab: data visualization ------
+   
+   w7 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                   span(br(), br(), br(), h4("Creating graphs..."),
+                                        style="color:white;")))  
+   
+   output$genes_for_dataviz_text <- renderText({
+     return(paste0("For the ", input$fs_algorithm_dataviz, " feature selection algorithm, ",
+                   "the best ", input$number_genes_dataviz, " genes are:"))
+   })
+   
+   output$genes_for_dataviz_list <- renderText({
+     if(input$fs_algorithm_dataviz == "mRMR"){
+       ranking <- values$ranking[1:input$number_genes_dataviz, 1]
+     }
+     
+     if(input$fs_algorithm_dataviz == "RF"){
+       ranking <- values$ranking[1:input$number_genes_dataviz, 2]
+     }
+     
+     if(input$fs_algorithm_dataviz == "DA"){
+       ranking <- values$ranking[1:input$number_genes_dataviz, 3]
+     }
+     return(ranking)
+   })  
+   
+   
+   observeEvent(input$button_dataviz, {
+     
+     output$dataviz_heatmap <- renderPlot(
+       {
+         
+         w7$show()
+         
+         # Load data
+         labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
+         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+         filas <- rownames(DEGsMatrix)
+         DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
+         rownames(DEGsMatrix) <- filas
+         
+         if(input$fs_algorithm_dataviz == "mRMR"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 1]
+         }
+         
+         if(input$fs_algorithm_dataviz == "RF"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 2]
+         }
+         
+         if(input$fs_algorithm_dataviz == "DA"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 3]
+         }
+         
+         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "heatmap")
+         
+         w7$hide()
+         
+         
+         return(dataviz)}
+     )
+     
+     output$dataviz_boxplot1 <- renderPlot(
+       {
+         w7$show()
+         
+         # Load data
+         labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
+         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+         filas <- rownames(DEGsMatrix)
+         DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
+         rownames(DEGsMatrix) <- filas
+
+         if(input$fs_algorithm_dataviz == "mRMR"){
+           ranking <- values$ranking[1:min(input$number_genes_dataviz, 25), 1]
+         }
+         
+         if(input$fs_algorithm_dataviz == "RF"){
+           ranking <- values$ranking[1:min(input$number_genes_dataviz, 25), 2]
+         }
+         
+         if(input$fs_algorithm_dataviz == "DA"){
+           ranking <- values$ranking[1:min(input$number_genes_dataviz, 25), 3]
+         }
+         
+         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot")
+         
+         w7$hide()
+         
+         return(dataviz)}
+     )
+  
+   output$dataviz_boxplot2 <- renderPlot(
+     {
+       w7$show()
+       
+       # Load data
+       labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
+       DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+       filas <- rownames(DEGsMatrix)
+       DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
+       rownames(DEGsMatrix) <- filas
+       
+       if(input$fs_algorithm_dataviz == "mRMR"){
+         ranking <- values$ranking[26:input$number_genes_dataviz, 1]
+       }
+       
+       if(input$fs_algorithm_dataviz == "RF"){
+         ranking <- values$ranking[26:input$number_genes_dataviz, 2]
+       }
+       
+       if(input$fs_algorithm_dataviz == "DA"){
+         ranking <- values$ranking[26:input$number_genes_dataviz, 3]
+       }
+       
+       dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot")
+       
+       w7$hide()
+       
+       return(dataviz)}
+   )
+   
+})
+   
+   
+   # Update maximum value for enrichment and dataviz sections
+   max_genes <- reactive({
+     input$numero_genes
+   })
+   observeEvent(max_genes(), {
+     updateSliderInput(inputId = "number_genes_dataviz", max = max_genes())
+     updateSliderInput(inputId = "number_genes_go", max = max_genes())
+     updateSliderInput(inputId = "number_genes_kegg", max = max_genes())
+     updateSliderInput(inputId = "number_genes_disease", max = max_genes())
+     updateSliderInput(inputId = "numero_genes_validation", max = max_genes())
+   })
   
   
 }

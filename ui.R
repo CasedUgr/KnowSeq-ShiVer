@@ -36,7 +36,8 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         menuItem("Model validation", tabName = "validation", icon = icon("check-circle")),
                         menuItem("Gene Ontologies", tabName = "GO", icon = icon("book-medical")),
                         menuItem("KEGG Pathways", tabName = "kegg", icon = icon("project-diagram")),
-                        menuItem("Related diseases", tabName = "diseases", icon = icon("disease"))
+                        menuItem("Related diseases", tabName = "diseases", icon = icon("disease")),
+                        menuItem("Data visualization", tabName = "dataviz", icon = icon("chart-pie"))
                       )
                     ),
                     ## Body
@@ -257,7 +258,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                               selected = "mRMR",
                                               width = "50%"),
                                   
-                                  sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use (must be equal or less than the number of genes selected at 'Genes selection'):",
+                                  sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use:",
                                               value = 10, min = 1, max = 50, step = 1, width = "50%"),
                                   
                                   actionButton(inputId = "boton_model_validation",
@@ -365,7 +366,57 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 conditionalPanel(condition = "input.boton_genes==0",
                                         h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
                                 )
-                          )
+                          ),
+                        # Tab 9
+                        tabItem(tabName = "dataviz",
+                                h1("Data visualization"),
+                                
+                                # If the best genes for each feature selection algorithm are already created, you can proceed
+                                conditionalPanel(condition = "input.boton_genes!=0",
+                                                 selectInput("fs_algorithm_dataviz",
+                                                             label = "Feature selection algorithm",
+                                                             choices = c("mRMR", "RF", "DA"),
+                                                             selected = "mRMR",
+                                                             width = "50%"),
+                                                 sliderInput(inputId = "number_genes_dataviz", label = "Number of genes",
+                                                             value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                                 
+                                                 textOutput("genes_for_dataviz_text"),
+                                                 textOutput("genes_for_dataviz_list"),
+                                                 
+                                                 br(),
+                                                 
+                                                 selectInput(inputId = "dataviz_type",
+                                                             label = "Choose the type of plot",
+                                                             choices = c("heatmap", "boxplot"),
+                                                             selected = "heatmap"),
+                                                 
+                                                 br(),
+
+                                                 actionButton(inputId = "button_dataviz",
+                                                              label = "Obtain data visualization",
+                                                              icon = icon("chart-pie", lib = "font-awesome"),
+                                                              width = "50%"),
+                                                 br(),br(),
+                                                 
+                                                 #fluidRow(column(6, 
+                                                 conditionalPanel(condition = "input.dataviz_type == 'boxplot'",
+                                                                  plotOutput("dataviz_boxplot1", height = "1300px")),
+                                                 #),
+                                                 #column(6,
+                                                 conditionalPanel(condition = "input.dataviz_type == 'boxplot' && input.number_genes_dataviz > 25",
+                                                                  plotOutput("dataviz_boxplot2", height = "1300px")),
+                                                 #)),
+                                                 conditionalPanel(condition = "input.dataviz_type == 'heatmap'",
+                                                                  plotOutput("dataviz_heatmap", height = "800px")),
+                                                 br(),
+                                                 ),
+                                
+                                # If not, the app tells you to load data and select the best genes
+                                conditionalPanel(condition = "input.boton_genes==0",
+                                                 h3("First you need to load data in ''Data loading'' and then select genes in ''Genes selection''", style = "color: #D95032")
+                                )
+                        )
                       ) # Close tabs
                     ) # Close dashboard body
 ) # Close dashboard page
