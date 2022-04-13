@@ -259,7 +259,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                               width = "50%"),
                                   
                                   sliderInput(inputId = "numero_genes_validation", label = "Select the number of genes to use:",
-                                              value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                              value = 10, min = 1, max = 50, step = 1, width = "50%", ticks = F),
                                   
                                   actionButton(inputId = "boton_model_validation",
                                                label = "Validate model in test",
@@ -289,7 +289,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                             selected = "mRMR",
                                             width = "50%"),
                                 sliderInput(inputId = "number_genes_go", label = "Number of genes",
-                                            value = 2, min = 1, max = 50, step = 1, width = "50%"),
+                                            value = 2, min = 1, max = 50, step = 1, width = "50%", ticks = F),
                                 textOutput("genes_for_go_text"), br(),
                                 textOutput("genes_for_go_list"),
                                  actionButton(inputId = "button_go",
@@ -315,7 +315,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                               selected = "mRMR",
                                               width = "50%"),
                                   sliderInput(inputId = "number_genes_kegg", label = "Number of genes",
-                                              value = 2, min = 1, max = 50, step = 1, width = "50%"),
+                                              value = 2, min = 1, max = 50, step = 1, width = "50%", ticks = F),
                                   textOutput("genes_for_kegg_text"), br(),
                                   textOutput("genes_for_kegg_list"),
                                   actionButton(inputId = "button_kegg",
@@ -342,7 +342,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                    selected = "mRMR",
                                                    width = "50%"),
                                        sliderInput(inputId = "number_genes_disease", label = "Number of genes",
-                                                   value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                                   value = 10, min = 1, max = 50, step = 1, width = "50%", ticks = F),
 
                                        textOutput("genes_for_disease_text"),
                                        textOutput("genes_for_disease_list"),
@@ -379,7 +379,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                              selected = "mRMR",
                                                              width = "50%"),
                                                  sliderInput(inputId = "number_genes_dataviz", label = "Number of genes",
-                                                             value = 10, min = 1, max = 50, step = 1, width = "50%"),
+                                                             value = 10, min = 1, max = 50, step = 1, width = "50%", ticks = F),
                                                  
                                                  textOutput("genes_for_dataviz_text"),
                                                  textOutput("genes_for_dataviz_list"),

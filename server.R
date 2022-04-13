@@ -576,7 +576,7 @@ server <- function(input, output){
    # Server of tab: data visualization ------
    
    w7 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                   span(br(), br(), br(), h4("Creating graphs..."),
+                                   span(br(), br(), br(), h4("Creating graph(s)..."),
                                         style="color:white;")))  
    
    output$genes_for_dataviz_text <- renderText({
