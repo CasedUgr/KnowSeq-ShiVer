@@ -1,4 +1,4 @@
-## KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package
+# KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package
 
 *KnowSeq Shiver* is the shiny-based web application of the [KnowSeq
 R/Bioc package](https://github.com/CasedUgr/KnowSeq) that allows users
@@ -7,6 +7,20 @@ data using all the functionalities available at KnowSeq.
 
 *KnowSeq Shiver* is currently available at
 <https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/>
+
+## Abstract
+
+**Motivation**: The challenges of precision medicine must be faced to
+achieve the paradigm shift. One of these important challenges is the
+development of tools with the capability of exploiting biological data
+to infer or extract new and relevant knowledge, and to bring these tools
+closer to researchers, physicians and other non-technical users.
+
+**Results**: We develop *KnowSeq Shiver*, an interactive web-application
+based on KnowSeq (R/Bioconductor package) that performs transcriptomic
+analysis with machine learning algorithms. This online tool is
+implemented using R and Shiny, and it’s oriented to users with no
+previous knowledge of programming.
 
 ## Citation
 
@@ -22,7 +36,7 @@ Francisco Carrillo-Pérez. University of Granada.
 
 Marta Verona-Almeida. University of Granada.
 
-Daniel Redondo-Sánchez. Granada Cancer Registry, ibs.GRANADA.
+Daniel Redondo-Sánchez. ibs.GRANADA, CIBERESP, EASP.
 
 Francisco Manuel Ortuño. Fundación Progreso y Salud (FPS), Hospital
 Virgen del Rocio, Sevilla.
@@ -56,7 +70,7 @@ devtools::session_info()
     ##  collate  Spanish_Spain.1252
     ##  ctype    Spanish_Spain.1252
     ##  tz       Europe/Paris
-    ##  date     2022-03-28
+    ##  date     2022-04-13
     ##  pandoc   2.17.1.1 @ C:/Program Files/RStudio/bin/quarto/bin/ (via rmarkdown)
     ## 
     ## - Packages -------------------------------------------------------------------
@@ -82,7 +96,7 @@ devtools::session_info()
     ##  checkmate          2.0.0      2020-02-06 [2] CRAN (R 4.0.2)
     ##  class              7.3-20     2022-01-13 [2] CRAN (R 4.1.2)
     ##  cli                3.1.1      2022-01-20 [1] CRAN (R 4.1.2)
-    ##  cluster            2.1.2      2021-04-17 [1] CRAN (R 4.1.3)
+    ##  cluster            2.1.3      2022-03-28 [1] CRAN (R 4.1.3)
     ##  codetools          0.2-18     2020-11-04 [2] CRAN (R 4.1.0)
     ##  colorspace         2.0-3      2022-02-21 [2] CRAN (R 4.1.2)
     ##  cqn              * 1.40.0     2021-10-26 [2] Bioconductor
@@ -93,12 +107,12 @@ devtools::session_info()
     ##  devtools         * 2.4.3      2021-11-30 [1] CRAN (R 4.1.3)
     ##  digest             0.6.29     2021-12-01 [2] CRAN (R 4.1.2)
     ##  dplyr            * 1.0.8      2022-02-08 [2] CRAN (R 4.1.2)
-    ##  DT               * 0.21       2022-02-26 [2] CRAN (R 4.1.2)
+    ##  DT               * 0.22       2022-03-28 [2] CRAN (R 4.1.3)
     ##  e1071              1.7-9      2021-09-16 [2] CRAN (R 4.1.0)
     ##  edgeR              3.36.0     2021-10-26 [1] Bioconductor
     ##  ellipsis           0.3.2      2021-04-29 [2] CRAN (R 4.0.5)
     ##  evaluate           0.15       2022-02-18 [2] CRAN (R 4.1.2)
-    ##  fansi              1.0.2      2022-01-14 [1] CRAN (R 4.1.3)
+    ##  fansi              1.0.3      2022-03-24 [1] CRAN (R 4.1.3)
     ##  fastmap            1.1.0      2021-01-25 [2] CRAN (R 4.0.2)
     ##  foreach            1.5.2      2022-02-02 [2] CRAN (R 4.1.2)
     ##  foreign            0.8-82     2022-01-13 [2] CRAN (R 4.1.2)
@@ -132,7 +146,7 @@ devtools::session_info()
     ##  KEGGREST           1.34.0     2021-10-26 [1] Bioconductor
     ##  kernlab            0.9-29     2019-11-12 [2] CRAN (R 4.0.0)
     ##  knitr              1.38       2022-03-25 [1] CRAN (R 4.1.0)
-    ##  KnowSeq          * 1.8.0      2021-10-26 [1] Bioconductor
+    ##  KnowSeq          * 1.6.1      2022-04-08 [1] Github (CasedUgr/KnowSeq@725c12f)
     ##  later              1.3.0      2021-08-18 [1] CRAN (R 4.1.1)
     ##  lattice          * 0.20-45    2021-09-22 [2] CRAN (R 4.1.1)
     ##  latticeExtra       0.6-29     2019-12-19 [2] CRAN (R 4.0.2)
@@ -142,18 +156,18 @@ devtools::session_info()
     ##  listenv            0.8.0      2019-12-05 [2] CRAN (R 4.1.1)
     ##  locfit             1.5-9.5    2022-03-03 [2] CRAN (R 4.1.2)
     ##  lubridate          1.8.0      2021-10-07 [1] CRAN (R 4.1.2)
-    ##  magrittr           2.0.2      2022-01-26 [2] CRAN (R 4.1.2)
+    ##  magrittr           2.0.2      2022-01-26 [2] CRAN (R 4.1.3)
     ##  MASS               7.3-56     2022-03-23 [1] CRAN (R 4.1.3)
     ##  Matrix             1.4-1      2022-03-23 [1] CRAN (R 4.1.3)
     ##  MatrixModels       0.5-0      2021-03-02 [2] CRAN (R 4.0.2)
     ##  matrixStats        0.61.0     2021-09-17 [2] CRAN (R 4.1.1)
     ##  mclust           * 5.4.9      2021-12-17 [2] CRAN (R 4.1.2)
     ##  memoise            2.0.1      2021-11-26 [2] CRAN (R 4.1.2)
-    ##  mgcv               1.8-39     2022-02-24 [2] CRAN (R 4.1.2)
+    ##  mgcv               1.8-40     2022-03-29 [2] CRAN (R 4.1.3)
     ##  mime               0.12       2021-09-28 [2] CRAN (R 4.1.0)
     ##  ModelMetrics       1.2.2.2    2020-03-17 [2] CRAN (R 4.0.2)
     ##  munsell            0.5.0      2018-06-12 [2] CRAN (R 4.0.2)
-    ##  nlme               3.1-155    2022-01-13 [1] CRAN (R 4.1.3)
+    ##  nlme               3.1-157    2022-03-25 [1] CRAN (R 4.1.3)
     ##  nnet               7.3-17     2022-01-13 [2] CRAN (R 4.1.2)
     ##  nor1mix          * 1.3-0      2019-06-13 [2] CRAN (R 4.0.2)
     ##  parallelly         1.30.0     2021-12-17 [2] CRAN (R 4.1.2)
@@ -161,13 +175,13 @@ devtools::session_info()
     ##  pkgbuild           1.3.1      2021-12-20 [2] CRAN (R 4.1.2)
     ##  pkgconfig          2.0.3      2019-09-22 [2] CRAN (R 4.0.2)
     ##  pkgload            1.2.4      2021-11-30 [2] CRAN (R 4.1.2)
-    ##  plyr               1.8.6      2020-03-03 [1] CRAN (R 4.1.3)
+    ##  plyr               1.8.7      2022-03-24 [1] CRAN (R 4.1.3)
     ##  png                0.1-7      2013-12-03 [2] CRAN (R 4.0.0)
     ##  praznik            10.0.0     2021-11-09 [2] CRAN (R 4.1.2)
     ##  preprocessCore   * 1.56.0     2021-10-26 [2] Bioconductor
     ##  prettyunits        1.1.1      2020-01-24 [2] CRAN (R 4.0.2)
     ##  pROC               1.18.0     2021-09-03 [2] CRAN (R 4.1.1)
-    ##  processx           3.5.2      2021-04-30 [1] CRAN (R 4.1.3)
+    ##  processx           3.5.3      2022-03-25 [1] CRAN (R 4.1.3)
     ##  prodlim            2019.11.13 2019-11-17 [2] CRAN (R 4.0.2)
     ##  promises           1.2.0.1    2021-02-11 [2] CRAN (R 4.0.3)
     ##  proxy              0.4-26     2021-06-07 [2] CRAN (R 4.0.5)
@@ -180,7 +194,7 @@ devtools::session_info()
     ##  R6                 2.5.1      2021-08-19 [2] CRAN (R 4.1.0)
     ##  randomForest       4.7-1      2022-02-03 [2] CRAN (R 4.1.2)
     ##  RColorBrewer       1.1-2      2014-12-07 [2] CRAN (R 4.0.0)
-    ##  Rcpp               1.0.8      2022-01-13 [1] CRAN (R 4.1.3)
+    ##  Rcpp               1.0.8.3    2022-03-17 [1] CRAN (R 4.1.3)
     ##  RCurl              1.98-1.6   2022-02-08 [2] CRAN (R 4.1.2)
     ##  recipes            0.2.0      2022-02-18 [2] CRAN (R 4.1.2)
     ##  remotes            2.4.2      2021-11-30 [2] CRAN (R 4.1.2)
@@ -202,13 +216,13 @@ devtools::session_info()
     ##  stringr            1.4.0      2019-02-10 [2] CRAN (R 4.0.2)
     ##  survival           3.3-1      2022-03-03 [2] CRAN (R 4.1.3)
     ##  sva                3.42.0     2021-10-26 [1] Bioconductor
-    ##  testthat           3.1.2      2022-01-20 [2] CRAN (R 4.1.2)
+    ##  testthat           3.1.3      2022-03-29 [2] CRAN (R 4.1.3)
     ##  tibble             3.1.6      2021-11-07 [2] CRAN (R 4.1.2)
     ##  tidyselect         1.1.2      2022-02-21 [2] CRAN (R 4.1.2)
     ##  timeDate           3043.102   2018-02-21 [2] CRAN (R 4.0.0)
     ##  usethis          * 2.1.5      2021-12-09 [2] CRAN (R 4.1.0)
     ##  utf8               1.2.2      2021-07-24 [2] CRAN (R 4.1.0)
-    ##  vctrs              0.3.8      2021-04-29 [2] CRAN (R 4.0.5)
+    ##  vctrs              0.3.8      2021-04-29 [2] CRAN (R 4.1.3)
     ##  waiter           * 0.2.5      2022-01-03 [2] CRAN (R 4.1.2)
     ##  withr              2.5.0      2022-03-03 [2] CRAN (R 4.1.0)
     ##  xfun               0.30       2022-03-02 [1] CRAN (R 4.1.2)
@@ -218,7 +232,7 @@ devtools::session_info()
     ##  yaml               2.3.5      2022-02-21 [2] CRAN (R 4.1.2)
     ##  zlibbioc           1.40.0     2021-10-26 [1] Bioconductor
     ## 
-    ##  [1] C:/Users/dredondo/Documents/R/win-library/4.1
-    ##  [2] C:/Users/dredondo/Documents/R/R-4.1.0/library
+    ##  [1] /R/win-library/4.1
+    ##  [2] /R/R-4.1.0/library
     ## 
     ## ------------------------------------------------------------------------------

@@ -4,12 +4,17 @@ output:
     variant: gfm
 ---
  
-## KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package
+# KnowSeq Shiver: The Shiny Version of KnowSeq R/Bioc Package
 
 *KnowSeq Shiver* is the shiny-based web application of the [KnowSeq R/Bioc package](https://github.com/CasedUgr/KnowSeq) that allows users with no previous knowledge of programming to analyze transcriptomics data using all the functionalities available at KnowSeq.
 
 *KnowSeq Shiver* is currently available at [https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/](https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/)
 
+## Abstract
+
+**Motivation**: The challenges of precision medicine must be faced to achieve the paradigm shift. One of these important challenges is the development of tools with the capability of exploiting biological data to infer or extract new and relevant knowledge, and to bring these tools closer to researchers, physicians and other non-technical users.
+
+**Results**: We develop *KnowSeq Shiver*, an interactive web-application based on KnowSeq (R/Bioconductor package) that performs transcriptomic analysis with machine learning algorithms. This online tool is implemented using R and Shiny, and it's oriented to users with no previous knowledge of programming.
 
 ## Citation
 ```
@@ -27,7 +32,7 @@ Francisco Carrillo-Pérez. University of Granada.
 
 Marta Verona-Almeida. University of Granada.
 
-Daniel Redondo-Sánchez. Granada Cancer Registry, ibs.GRANADA.
+Daniel Redondo-Sánchez. ibs.GRANADA, CIBERESP, EASP.
 
 Francisco Manuel Ortuño. Fundación Progreso y Salud (FPS), Hospital Virgen del Rocio, Sevilla.
 
