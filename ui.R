@@ -85,67 +85,64 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 br(), br(), br(),
                                 fluidRow(column(4, tags$img(src = "images/ugr.png", height = "120px")),
                                          column(4, br(), br(), tags$img(src = "images/ibs.jpg", height = "40px")),
-                                         column(4, tags$img(src = "images/knowseq.png", height = "120px"))),
+                                         column(4, tags$img(src = "images/knowseq.png", height = "120px")))
                         ),
                         
                         # Tab 2
                         tabItem(tabName = "data",
                                 
-                                h1("Data loading", align = "center"),
-                                tags$p(
-                                  tags$h2("You can load:", align = "center"), 
-                                  tags$h4("A. Raw data", align = "center"),
-                                  tags$p("OR", align = "center"),
-                                  tags$h4("B. DEGs and labels.", align = "center"), align = "center"),
-
-                                # Left column
-                                fluidRow(column(6, 
-                                                h2("A. Load DEGs and labels"),
-                                                fileInput(inputId = "file_labels",
-                                                          label = span("Select CSV file with labels (see ",
-                                                                       tags$a(
-                                                                         "here",
-                                                                         href = "https://raw.githubusercontent.com/danielredondo/TFM_ciencia_de_datos/master/shiny/datos/higado_200genes_labels.csv",
-                                                                         target="_blank"
-                                                                       ),
-                                                                       "an example)"),
-                                                          accept = ".csv",
-                                                          width = "100%"
-                                                ),
-                                                fileInput(inputId = "file_DEGsMatrix",
-                                                          label = span("Select CSV file with DEGsMatrix (see ",
-                                                                       tags$a(
-                                                                         "here",
-                                                                         href = "https://github.com/danielredondo/TFM_ciencia_de_datos/raw/master/shiny/datos/higado_200genes_DEGsMatrix.csv",
-                                                                         target="_blank"
-                                                                       ),
-                                                                       "an example)"),
-                                                          accept = ".csv",
-                                                          width = "100%"
-                                                ),
-                                                
-                                                actionButton(inputId = "boton_importar",
-                                                             label = "Import files",
-                                                             icon = icon("fas fa-file-import", lib = "font-awesome"),
-                                                             width = "100%"),
-                                                br(),
-                                                
-                                                conditionalPanel(condition = "input.boton_importar!=0",
-                                                                 
-                                                                 h2("Distribution of classes"),
-                                                                 
-                                                                 tableOutput("tabla1")
-                                                                 
-                                                )),
-                                         column(6, 
-                                                h2("B. Load raw data"),
-                                                conditionalPanel(condition = "input.boton_importar!=0",
-                                                                 h2("Otro método"),
-                                                                 
-                                                                 
-                                                                ))
+                                h1("Data loading"),br(),
+                                
+                                h2("Step 1. Load labels"),
+                                
+                                fileInput(inputId = "file_labels",
+                                          label = span("Select CSV file with labels (see ",
+                                                       tags$a(
+                                                         "here",
+                                                         href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_labels.csv",
+                                                         target="_blank"
+                                                       ),
+                                                       "an example)"),
+                                          accept = ".csv",
+                                          width = "100%"
                                 ),
                                 
+                                  h2("Step 2. Load counts/expressions matrix"),
+                                  tags$p("You can choose to load a counts matrix or a expression matrix"),
+                                  
+                                # Choose matrix
+                                selectInput("type_file",
+                                            label = "Choose the type of file you are going to upload",
+                                            choices = c("Counts matrix" = "counts_matrix",
+                                                        "Expression matrix" = "expression_matrix"),
+                                            selected = "expression_matrix",
+                                            width = "50%"),
+                                
+                                  fileInput(inputId = "file_DEGsMatrix",
+                                            label = span("Select CSV file with DEGsMatrix (see ",
+                                                         tags$a(
+                                                           "here",
+                                                           href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_DEGsMatrix_200genes.csv",
+                                                           target="_blank"
+                                                         ),
+                                                         "an example)"),
+                                            accept = ".csv",
+                                            width = "100%"
+                                  ),
+
+                                actionButton(inputId = "boton_importar",
+                                             label = "Import files",
+                                             icon = icon("fas fa-file-import", lib = "font-awesome"),
+                                             width = "100%"),
+                                br(),
+                                
+                                conditionalPanel(condition = "input.boton_importar!=0",
+                                                 
+                                                 h2("Distribution of classes"),
+                                                 
+                                                 tableOutput("tabla1")
+                                                 
+                                ),
                                 
                                 conditionalPanel(condition = "input.boton_importar!=0",
                                                  h2("Train-test partition"),
