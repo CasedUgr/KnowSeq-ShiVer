@@ -32,8 +32,10 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         menuItem("Introduction", tabName = "intro", icon = icon("file-alt")),
                         menuItem("Data loading", tabName = "data", icon = icon("database")),
                         menuItem("Genes selection", tabName = "genes", icon = icon("dna")),
-                        menuItem("Model training", tabName = "training", icon = icon("play")),
-                        menuItem("Model validation", tabName = "validation", icon = icon("check-circle")),
+                        menuItem("Machine learning", icon = icon("laptop-code"),
+                                 menuSubItem("Model training", tabName = "training", icon = icon("play")),
+                                 menuSubItem("Model validation", tabName = "validation", icon = icon("check-circle"))
+                        ),
                         menuItem("Gene Ontologies", tabName = "GO", icon = icon("book-medical")),
                         menuItem("KEGG Pathways", tabName = "kegg", icon = icon("project-diagram")),
                         menuItem("Related diseases", tabName = "diseases", icon = icon("disease")),
