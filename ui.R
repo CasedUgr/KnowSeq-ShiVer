@@ -91,9 +91,16 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                         # Tab 2
                         tabItem(tabName = "data",
                                 
+                                h1("Data loading", align = "center"),
+                                tags$p(
+                                  tags$h2("You can load:", align = "center"), 
+                                  tags$h4("A. Raw data", align = "center"),
+                                  tags$p("OR", align = "center"),
+                                  tags$h4("B. DEGs and labels.", align = "center"), align = "center"),
+
                                 # Left column
                                 fluidRow(column(6, 
-                                                h1("Data loading"),
+                                                h2("A. Load DEGs and labels"),
                                                 fileInput(inputId = "file_labels",
                                                           label = span("Select CSV file with labels (see ",
                                                                        tags$a(
@@ -130,19 +137,26 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                                  tableOutput("tabla1")
                                                                  
                                                 )),
-                                         # Right column
-                                         column(6, br(), br(), br(),
+                                         column(6, 
+                                                h2("B. Load raw data"),
                                                 conditionalPanel(condition = "input.boton_importar!=0",
-                                                                 h2("Train-test partition"),
+                                                                 h2("Otro método"),
                                                                  
-                                                                 sliderInput("porcentaje_entrenamiento",
-                                                                             label = "Train percentage (%)",
-                                                                             value = 75, min = 5, max = 95, step = 5,
-                                                                             width = "100%"
-                                                                 ),
-                                                                 h2("Sankey plot"),
-                                                                 plotOutput("sankey", width = "100%")))
-                                )
+                                                                 
+                                                                ))
+                                ),
+                                
+                                
+                                conditionalPanel(condition = "input.boton_importar!=0",
+                                                 h2("Train-test partition"),
+                                                 
+                                                 sliderInput("porcentaje_entrenamiento",
+                                                             label = "Train percentage (%)",
+                                                             value = 75, min = 5, max = 95, step = 5,
+                                                             width = "100%"
+                                                 ),
+                                                 h2("Sankey plot"),
+                                                 plotOutput("sankey", width = "100%"))
                                 
                         ),
                         
