@@ -291,7 +291,7 @@ server <- function(input, output){
                        Sensitivity = round(100 * results_cv$sensitivityInfo$meanSensitivity, 2),
                        Specificity = round(100 * results_cv$specificityInfo$meanSpecificity, 2),
                        check.names = F)
-      dat <- datatable(df, rownames = F, options = list(pageLength = 10)) %>% formatStyle(names(df)[2:5],
+      dat <- datatable(df, rownames = F, options = list(pageLength = 10, searching = FALSE)) %>% formatStyle(names(df)[2:5],
                                                                                           background = styleColorBar(range(df[, 2:5]) - c(1, 0), "forestgreen"),
                                                                                           backgroundSize = "98% 88%",
                                                                                           backgroundRepeat = "no-repeat",
