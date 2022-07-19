@@ -107,8 +107,8 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                           width = "100%"
                                 ),
                                 
-                                  h2("Step 2. Load counts/expressions matrix"),
-                                  tags$p("You can choose to load a counts matrix or a expression matrix"),
+                                h2("Step 2. Load counts/expressions matrix"),
+                                tags$p("You can choose to load a counts matrix or a expression matrix"),
                                   
                                 # Choose matrix
                                 selectInput("type_file",
@@ -118,17 +118,28 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                             selected = "expression_matrix",
                                             width = "50%"),
                                 
-                                  fileInput(inputId = "file_DEGsMatrix",
-                                            label = span("Select CSV file with DEGsMatrix (see ",
+                                  fileInput(inputId = "file_Matrix",
+                                            label = span("Select CSV file with expression matrix (see ",
                                                          tags$a(
                                                            "here",
                                                            href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_DEGsMatrix_200genes.csv",
                                                            target="_blank"
                                                          ),
-                                                         "an example)"),
+                                                         "an example) or counts matrix (see ",
+                                                         tags$a(
+                                                           "here",
+                                                           href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_countsMatrix.csv",
+                                                           target="_blank"
+                                                         ),
+                                                         "an example)."
+                                                         ),
                                             accept = ".csv",
                                             width = "100%"
                                   ),
+                                
+                                h3("Choose p-value for the DEGs extraction"),
+                                sliderInput("pvalue", label = "p-value", 
+                                            min = 0.00001, max = 0.01, value = 0.001, step = 0.0005),
 
                                 actionButton(inputId = "boton_importar",
                                              label = "Import files",
@@ -138,22 +149,32 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 
                                 conditionalPanel(condition = "input.boton_importar!=0",
                                                  
-                                                 h2("Distribution of classes"),
+                                                 h5("Distribution of classes"),
                                                  
                                                  tableOutput("tabla1")
                                                  
                                 ),
                                 
                                 conditionalPanel(condition = "input.boton_importar!=0",
-                                                 h2("Train-test partition"),
                                                  
-                                                 sliderInput("porcentaje_entrenamiento",
-                                                             label = "Train percentage (%)",
-                                                             value = 75, min = 5, max = 95, step = 5,
-                                                             width = "100%"
-                                                 ),
-                                                 h2("Sankey plot"),
-                                                 plotOutput("sankey", width = "100%"))
+                                                 # Number of DEGs extracted
+                                                 h5("DEGs extracted: XXX"),
+                                                 
+                                                 
+                                                 
+                                                 #h2("Train-test partition"),
+                                                 
+                                                 # Ver qué hacer con esto
+                                                 # sliderInput("porcentaje_entrenamiento",
+                                                 #             label = "Train percentage (%)",
+                                                 #             value = 75, min = 5, max = 95, step = 5,
+                                                 #             width = "100%"
+                                                 # )
+                                                 
+                                                 
+                                                 # h2("Sankey plot"),
+                                                 # plotOutput("sankey", width = "100%")
+                                                 )
                                 
                         ),
                         

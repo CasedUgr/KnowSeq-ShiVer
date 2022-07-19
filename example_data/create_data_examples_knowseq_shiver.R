@@ -82,6 +82,9 @@ countsMatrix2 <- countsMatrix[rownames(countsMatrix) %in% myAnnotation_names$ens
 dim(countsMatrix2)
 rownames(countsMatrix2) <- myAnnotation_names$external_gene_name
 
+# Quitar duplicados de nuevo
+countsMatrix2 <- countsMatrix2[! duplicated(rownames(countsMatrix2)),]
+
 write.csv2(labels, file = paste0("..\\..\\liver_labels.csv"), row.names = F)
 write.csv2(countsMatrix2, file = paste0("..\\..\\liver_countsMatrix.csv"))
 
@@ -91,6 +94,13 @@ write.csv2(countsMatrix2, file = paste0("..\\..\\liver_countsMatrix.csv"))
 tic("calculateGeneExpressionValues") # 82 segundos
 expressionMatrix <- calculateGeneExpressionValues(countsMatrix, myAnnotation, genesNames = TRUE)
 toc()
+
+# Quitar una fila que tiene NA como nombre
+table(is.na(rownames(expressionMatrix)))
+expressionMatrix <- expressionMatrix[-which(is.na(rownames(expressionMatrix))),]
+table(is.na(rownames(expressionMatrix)))
+
+write.csv2(expressionMatrix, file = paste0("..\\..\\liver_expressionMatrix.csv"))
 
 # ----- Sólo 200 genes - Extracción de DEG (Expresión Diferencial de Genes) -----
 
@@ -110,4 +120,5 @@ print(nrow(DEGsInformation$DEG_Results$DEGs_Matrix))
 topTable <- DEGsInformation$DEG_Results$DEGs_Table
 DEGsMatrix <- DEGsInformation$DEG_Results$DEGs_Matrix
 
-write.csv2(DEGsMatrix, file = paste0("..\\..\\liver_DEGsMatrix_", number_of_genes, "genes.csv"))
+#write.csv2(DEGsMatrix, file = paste0("..\\..\\liver_DEGsMatrix_", number_of_genes, "genes.csv"))
+#save.image(file = "all_objects.RData")

@@ -1,3 +1,7 @@
+# 300MB as limit size
+options(shiny.maxRequestSize=300*1024^2)
+
+
 library(KnowSeq)
 library(waiter)
 library(dplyr)
@@ -21,33 +25,66 @@ spinner <- tagList(
 server <- function(input, output){
   
   values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL, optimalrf_train = NULL)
+  values_data <- reactiveValues(DEGsMatrix = NULL)
   
   # Server of tab: Data loading ------
   
+  w1 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                 span(br(), br(), br(), h4("Calculating gene expression values..."),
+                                      style="color:white;")))
+  w2 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                  span(br(), br(), br(), h4("Extracting DEGs..."),
+                                       style="color:white;")))
+
   observeEvent(input$boton_importar, {
     
     # If files are selected, they are imported
     # Read labels
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
+    
+    if(input$type_file == "counts_matrix"){
+      w1$show()
+      countsMatrix <- as.matrix(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
+      myAnnotation <- getGenesAnnotation(rownames(countsMatrix), filter="external_gene_name")
+      expressionMatrix <- calculateGeneExpressionValues(countsMatrix, myAnnotation, Ensembl_ID = FALSE)
+      w1$hide()
+      w2$show()
+    } else {
+      w2$show()
+      expressionMatrix <- as.matrix(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
+    }
+  
+    DEGsInformation <- DEGsExtraction(expressionMatrix, as.factor(labels),
+                                      # p-valor
+                                      pvalue = input$pvalue,
+                                      #number = 200
+                                      )
+    DEGsMatrix <- DEGsInformation$DEG_Results$DEGs_Matrix
+    
     # Read DEGsMatrix
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
+    
+    # Keep DEGsMatrix in memory
+    values_data$DEGsMatrix <- DEGsMatrix
+    
     # Create DEGsMatrixML (for machine learning purposes)
     DEGsMatrixML <- t(DEGsMatrix)
     
+    w2$hide()
+    
     # Train-test partition
-    set.seed(31415)
-    indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
-    particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
-    
-    particion.entrenamiento <- reactive(particion()$training)
-    particion.test <- reactive(particion()$test)
-    
-    # Labels
-    labels_train <- reactive(labels[indices()])
-    labels_test  <- reactive(labels[-indices()])
+    # set.seed(31415)
+    # indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
+    # particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
+    # 
+    # particion.entrenamiento <- reactive(particion()$training)
+    # particion.test <- reactive(particion()$test)
+    # 
+    # # Labels
+    # labels_train <- reactive(labels[indices()])
+    # labels_test  <- reactive(labels[-indices()])
     
     # Table
     output$tabla1 <- renderTable({
@@ -56,7 +93,7 @@ server <- function(input, output){
       # Message if file is correctly imported
       showModal(modalDialog(
         h3(icon("check-circle", lib = "font-awesome", class = "fa-1x"),
-           " Files imported"),
+           " Files imported correctly"),
         easyClose = TRUE,
         footer = NULL
       ))
@@ -64,51 +101,51 @@ server <- function(input, output){
       tabla_aux <- as.data.frame(table(labels)) %>% rename(Label = labels, Samples = Freq)
       return(tabla_aux)
     })
-    
-    output$sankey <- renderPlot({
-      if(is.null(input$file_labels)) return(NULL)
-      
-      # Train
-      #table(labels_train)
-      entr_tum <- table(labels_train())[1]
-      entr_san <- table(labels_train())[2]
-      
-      # Test
-      #table(labels_test)
-      test_tum <- table(labels_test())[1]
-      test_san <- table(labels_test())[2]
-      
-      # Sankey diagram
-      datos_sankey <- data.frame(tipo = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Tumour\n", entr_tum + test_tum, " cases"),
-                                          paste0("Normal tissue\n", entr_san + test_san, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
-                                 traintest = c(paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
-                                               paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue"),
-                                               paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
-                                               paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue")),
-                                 value = c(entr_tum, test_tum, entr_san, test_san))
-      
-      # Reordering types
-      datos_sankey$tipo <- factor(datos_sankey$tipo,
-                                  levels = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
-                                  ordered = T)
-      
-      ggplot(data = datos_sankey,
-             aes(axis1 = tipo, axis2 = traintest, y = value, label = after_stat(stratum))) +
-        scale_x_discrete(limits = c("Type of sample", "Train-test"),
-                         expand = c(.1, .05)) +
-        ylab("") +
-        geom_alluvium(col = "black", alpha = 1) +
-        geom_alluvium(aes(fill = tipo), alpha = .6, show.legend = FALSE) +
-        geom_stratum() +
-        geom_text(stat = "stratum", cex = 3) +
-        theme_minimal() +
-        ggtitle("Train-test partition") +
-        theme(plot.title = element_text(hjust = .5),
-              axis.text = element_text(color = "black", margin = margin(t = -30), size = 12),
-              axis.text.y = element_blank(),
-              axis.ticks = element_blank(),
-              panel.grid = element_blank()) 
-    })
+  
+    # output$sankey <- renderPlot({
+    #   if(is.null(input$file_labels)) return(NULL)
+    #   
+    #   # Train
+    #   #table(labels_train)
+    #   entr_tum <- table(labels_train())[1]
+    #   entr_san <- table(labels_train())[2]
+    #   
+    #   # Test
+    #   #table(labels_test)
+    #   test_tum <- table(labels_test())[1]
+    #   test_san <- table(labels_test())[2]
+    #   
+    #   # Sankey diagram
+    #   datos_sankey <- data.frame(tipo = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Tumour\n", entr_tum + test_tum, " cases"),
+    #                                       paste0("Normal tissue\n", entr_san + test_san, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
+    #                              traintest = c(paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
+    #                                            paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue"),
+    #                                            paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
+    #                                            paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue")),
+    #                              value = c(entr_tum, test_tum, entr_san, test_san))
+    #   
+    #   # Reordering types
+    #   datos_sankey$tipo <- factor(datos_sankey$tipo,
+    #                               levels = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
+    #                               ordered = T)
+    #   
+    #   ggplot(data = datos_sankey,
+    #          aes(axis1 = tipo, axis2 = traintest, y = value, label = after_stat(stratum))) +
+    #     scale_x_discrete(limits = c("Type of sample", "Train-test"),
+    #                      expand = c(.1, .05)) +
+    #     ylab("") +
+    #     geom_alluvium(col = "black", alpha = 1) +
+    #     geom_alluvium(aes(fill = tipo), alpha = .6, show.legend = FALSE) +
+    #     geom_stratum() +
+    #     geom_text(stat = "stratum", cex = 3) +
+    #     theme_minimal() +
+    #     ggtitle("Train-test partition") +
+    #     theme(plot.title = element_text(hjust = .5),
+    #           axis.text = element_text(color = "black", margin = margin(t = -30), size = 12),
+    #           axis.text.y = element_blank(),
+    #           axis.ticks = element_blank(),
+    #           panel.grid = element_blank()) 
+    # })
   }) # Close import button
   
   
@@ -121,7 +158,7 @@ server <- function(input, output){
     w$show()
     
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
@@ -179,7 +216,6 @@ server <- function(input, output){
     
     w$hide()
     
-    
     values$ranking <- cbind(mrmrRanking, rfRanking, daRanking)
     
     # Ranking tables
@@ -213,7 +249,7 @@ server <- function(input, output){
     
     
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
@@ -315,7 +351,7 @@ server <- function(input, output){
     w3$show()
     
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
@@ -609,7 +645,7 @@ server <- function(input, output){
          
          # Load data
          labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
          filas <- rownames(DEGsMatrix)
          DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
          rownames(DEGsMatrix) <- filas
@@ -640,7 +676,7 @@ server <- function(input, output){
          
          # Load data
          labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
          filas <- rownames(DEGsMatrix)
          DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
          rownames(DEGsMatrix) <- filas
@@ -670,7 +706,7 @@ server <- function(input, output){
        
        # Load data
        labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-       DEGsMatrix <- as.data.frame(read.csv2(file = input$file_DEGsMatrix$datapath, row.names = 1))
+       DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
        filas <- rownames(DEGsMatrix)
        DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
        rownames(DEGsMatrix) <- filas
