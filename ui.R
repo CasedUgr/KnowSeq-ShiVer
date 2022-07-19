@@ -93,21 +93,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 
                                 h1("Data loading"),br(),
                                 
-                                h2("Step 1. Load labels"),
-                                
-                                fileInput(inputId = "file_labels",
-                                          label = span("Select CSV file with labels (see ",
-                                                       tags$a(
-                                                         "here",
-                                                         href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_labels.csv",
-                                                         target="_blank"
-                                                       ),
-                                                       "an example)"),
-                                          accept = ".csv",
-                                          width = "100%"
-                                ),
-                                
-                                h2("Step 2. Load counts/expressions matrix"),
+                                h2("Step 1. Load counts/expressions matrix"),
                                 tags$p("You can choose to load a counts matrix or a expression matrix"),
                                   
                                 # Choose matrix
@@ -139,8 +125,22 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 
                                 h3("Choose p-value for the DEGs extraction"),
                                 sliderInput("pvalue", label = "p-value", 
-                                            min = 0.00001, max = 0.01, value = 0.001, step = 0.0005),
+                                            min = 0.00001, max = 0.01, value = 0.001, step = 0.0005), br(),
 
+                                h2("Step 2. Load labels"),
+                                
+                                fileInput(inputId = "file_labels",
+                                          label = span("Select CSV file with labels (see ",
+                                                       tags$a(
+                                                         "here",
+                                                         href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_labels.csv",
+                                                         target="_blank"
+                                                       ),
+                                                       "an example)"),
+                                          accept = ".csv",
+                                          width = "100%"
+                                ),
+                                
                                 actionButton(inputId = "boton_importar",
                                              label = "Import files",
                                              icon = icon("fas fa-file-import", lib = "font-awesome"),
