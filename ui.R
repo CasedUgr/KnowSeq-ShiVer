@@ -142,7 +142,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 ),
                                 
                                 actionButton(inputId = "boton_importar",
-                                             label = "Import files",
+                                             label = "Import files and extract DEGs",
                                              icon = icon("fas fa-file-import", lib = "font-awesome"),
                                              width = "100%"),
                                 br(),
@@ -151,31 +151,36 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                  
                                                  h5("Distribution of classes"),
                                                  
-                                                 tableOutput("tabla1")
+                                                 tableOutput("tabla1"),
+                                                 
+                                                 h5(textOutput("degs_number")),
+                                                 
+                                                 h5("Table of DEGs"),
+                                                 
+                                                 dataTableOutput("degs_datatable")
+                                                 
                                                  
                                 ),
                                 
-                                conditionalPanel(condition = "input.boton_importar!=0",
-                                                 
-                                                 # Number of DEGs extracted
-                                                 h5("DEGs extracted: XXX"),
-                                                 
-                                                 
-                                                 
-                                                 #h2("Train-test partition"),
-                                                 
-                                                 # Ver qué hacer con esto
-                                                 # sliderInput("porcentaje_entrenamiento",
-                                                 #             label = "Train percentage (%)",
-                                                 #             value = 75, min = 5, max = 95, step = 5,
-                                                 #             width = "100%"
-                                                 # )
-                                                 
-                                                 
-                                                 # h2("Sankey plot"),
-                                                 # plotOutput("sankey", width = "100%")
-                                                 )
-                                
+                        #         conditionalPanel(condition = "input.boton_importar!=0",
+                        #                          
+                        #                          
+                        #                          
+                        #                          
+                        #                          #h2("Train-test partition"),
+                        #                          
+                        #                          # Ver qué hacer con esto
+                        #                          # sliderInput("porcentaje_entrenamiento",
+                        #                          #             label = "Train percentage (%)",
+                        #                          #             value = 75, min = 5, max = 95, step = 5,
+                        #                          #             width = "100%"
+                        #                          # )
+                        #                          
+                        #                          
+                        #                          # h2("Sankey plot"),
+                        #                          # plotOutput("sankey", width = "100%")
+                        #                          )
+                        #         
                         ),
                         
                         # Tab 3

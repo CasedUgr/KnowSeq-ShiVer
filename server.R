@@ -24,19 +24,19 @@ spinner <- tagList(
 
 server <- function(input, output){
   
-  values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL, optimalrf_train = NULL)
-  values_data <- reactiveValues(DEGsMatrix = NULL)
+  values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL, optimalrf_train = NULL,
+                           DEGsMatrix = NULL, DEGs = NULL)
   
   # Server of tab: Data loading ------
   
-  w1 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                 span(br(), br(), br(), h4("Calculating gene expression values..."),
-                                      style="color:white;")))
-  w2 <- Waiter$new(html = tagList(spin_folding_cube(),
-                                  span(br(), br(), br(), h4("Extracting DEGs..."),
-                                       style="color:white;")))
-
   observeEvent(input$boton_importar, {
+    
+    w1 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                    span(br(), br(), br(), h4("Calculating gene expression values..."),
+                                         style="color:white;")))
+    w2 <- Waiter$new(html = tagList(spin_folding_cube(),
+                                    span(br(), br(), br(), h4("Extracting DEGs..."),
+                                         style="color:white;")))
     
     # If files are selected, they are imported
     # Read labels
@@ -67,7 +67,8 @@ server <- function(input, output){
     rownames(DEGsMatrix) <- filas
     
     # Keep DEGsMatrix in memory
-    values_data$DEGsMatrix <- DEGsMatrix
+    values$DEGsMatrix <- DEGsMatrix
+    values$DEGs       <- colnames(DEGsMatrix)
     
     # Create DEGsMatrixML (for machine learning purposes)
     DEGsMatrixML <- t(DEGsMatrix)
@@ -101,6 +102,16 @@ server <- function(input, output){
       tabla_aux <- as.data.frame(table(labels)) %>% rename(Label = labels, Samples = Freq)
       return(tabla_aux)
     })
+    
+    output$degs_number <- renderText(paste(nrow(DEGsInformation$DEG_Results$DEGs_Table),
+                                           "DEGs were extracted."))
+    
+    output$degs_datatable <- renderDataTable(
+      {
+        return(DEGsInformation$DEG_Results$DEGs_Table)}
+      , filter = "top", rownames = TRUE, options = list(pageLength = 25)
+    )
+    
   
     # output$sankey <- renderPlot({
     #   if(is.null(input$file_labels)) return(NULL)
