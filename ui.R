@@ -66,7 +66,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 
                                 h2("Containerization"),
                                 "KnowSeq Shiver has been encapsulated in a Docker container which allow to deploy the app in your own hardware. To run it locally, just type the following lines:",
-                                br(),br(),"docker push casedugr/knowseq-shiver",br(),
+                                br(),br(),"docker pull casedugr/knowseq-shiver",br(),
                                 "docker run -p 3838:3838 casedugr/knowseq-shiver", br(), br(), "And go to ", tags$a("localhost:3838", href = "http://localhost:3838", target="_blank"),
                                 
                                 h2("Code"),
