@@ -11,7 +11,7 @@ data using all the functionalities available at KnowSeq.
 Furthermore, if you want to take advantage of your own hardware, there is a Docker image available to deploy KnowSeq ShiVer in local without restriction. To use it just write:
 
 ``` r
-docker push casedugr/knowseq-shiver 
+docker pull casedugr/knowseq-shiver 
 
 docker run -p 3838:3838 casedugr/knowseq-shiver
 ```
