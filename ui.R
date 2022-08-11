@@ -64,6 +64,11 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 h2("Citation"),
                                 tags$article("Castillo-Secilla, D., Gálvez, J. M., Carrillo-Pérez, F., Verona-Almeida, M., Redondo-Sánchez, D., Ortuno, F. M., Herrera, L. J. & Rojas, I. (2021). KnowSeq R-Bioc package: The automatic smart gene expression tool for retrieving relevant biological knowledge. Computers in Biology and Medicine, 133, 104387."),
                                 
+                                h2("Containerization"),
+                                "KnowSeq Shiver has been encapsulated in a Docker container which allow to deploy the app in your own hardware. To run it locally, just type the following lines:",
+                                br(),br(),"docker push casedugr/knowseq-shiver",br(),
+                                "docker run -p 3838:3838 casedugr/knowseq-shiver", br(), br(), "And go to ", tags$a("localhost:3838", href = "http://localhost:3838", target="_blank"),
+                                
                                 h2("Code"),
                                 "The code of this web application is available on ", tags$a("GitHub", href = "https://github.com/CasedUgr/KnowSeq-ShiVer", target="_blank"), ".",
                                 
