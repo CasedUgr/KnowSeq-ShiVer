@@ -114,7 +114,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                          "an example) or counts matrix (see ",
                                                          tags$a(
                                                            "here",
-                                                           href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_countsMatrix.csv",
+                                                           href = "https://github.com/CasedUgr/KnowSeq-ShiVer/raw/main/example_data/liver_countsMatrix.csv",
                                                            target="_blank"
                                                          ),
                                                          "an example)."
@@ -126,6 +126,10 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 h3("Choose p-value for the DEGs extraction"),
                                 sliderInput("pvalue", label = "p-value", 
                                             min = 0.00001, max = 0.01, value = 0.001, step = 0.0005), br(),
+                                
+                                h3("Choose LFC for the DEGs extraction"),
+                                sliderInput("lfc", label = "LFC", 
+                                            min = 1, max = 10, value = 1, step = 0.1), br(),
 
                                 h2("Step 2. Load labels"),
                                 
@@ -133,7 +137,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                           label = span("Select CSV file with labels (see ",
                                                        tags$a(
                                                          "here",
-                                                         href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/improvements/example_data/liver_labels.csv",
+                                                         href = "https://github.com/CasedUgr/KnowSeq-ShiVer/blob/main/example_data/liver_labels.csv",
                                                          target="_blank"
                                                        ),
                                                        "an example)"),
@@ -189,7 +193,11 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 # If data is loaded, you can proceed
                                 conditionalPanel(condition = "input.boton_importar!=0",
                                                  
-                                  sliderInput(inputId = "numero_genes", label = "Select the number of genes to use", value = 50, min = 1, max = 50, step = 1, width = "50%"),
+                                  sliderInput(inputId = "numero_genes", label = "Select the number of genes to use", value = 20, min = 1, max = 100, step = 1, width = "50%"),
+                                  
+                                  h3("Choose the training percentage to split the data"),
+                                  sliderInput("trn_percentage", label = "Training Percentagee", 
+                                              min = 50, max = 100, value = 80, step = 5), br(),
                                   
                                   textInput(inputId = "disease_da", label = "Disease for DA algorithm", value = "liver cancer", width = "50%"),
                                   
@@ -427,7 +435,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                  
                                                  selectInput(inputId = "dataviz_type",
                                                              label = "Choose the type of plot",
-                                                             choices = c("heatmap", "boxplot"),
+                                                             choices = c("heatmap", "boxplot","t-SNE"),
                                                              selected = "heatmap"),
                                                  
                                                  br(),
@@ -448,6 +456,9 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                                  #)),
                                                  conditionalPanel(condition = "input.dataviz_type == 'heatmap'",
                                                                   plotOutput("dataviz_heatmap", height = "800px")),
+                                                 
+                                                 conditionalPanel(condition = "input.dataviz_type == 't-SNE'",
+                                                                  plotOutput("dataviz_tsne", height = "600px")),
                                                  br(),
                                                  ),
                                 

@@ -9,6 +9,7 @@ library(reshape2)
 library(caret)
 library(ggplot2)
 library(ggalluvial)
+library(M3C)
 
 # Define some spinners
 spinner_abrir <- tagList(
@@ -55,6 +56,7 @@ server <- function(input, output){
     }
   
     DEGsInformation <- DEGsExtraction(expressionMatrix, as.factor(labels),
+                                      lfc = input$lfc,
                                       # p-valor
                                       pvalue = input$pvalue,
                                       #number = 200
@@ -167,16 +169,16 @@ server <- function(input, output){
   observeEvent(input$boton_genes, {
     
     w$show()
-    
+    DEGsMatrix <- values$DEGsMatrix
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
     DEGsMatrixML <- t(DEGsMatrix)
     
     set.seed(31415)
-    indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
+    indices <- reactive(createDataPartition(labels, p = input$trn_percentage / 100, list = FALSE))
+
     particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
     
     particion.entrenamiento <- reactive(particion()$training)
@@ -259,15 +261,15 @@ server <- function(input, output){
     w2$show()
     
     
+    DEGsMatrix <- values$DEGsMatrix
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
     DEGsMatrixML <- t(DEGsMatrix)
     
     set.seed(31415)
-    indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
+    indices <- reactive(createDataPartition(labels, p = input$trn_percentage / 100, list = FALSE))
     particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
     
     particion.entrenamiento <- reactive(particion()$training)
@@ -361,15 +363,15 @@ server <- function(input, output){
       
     w3$show()
     
+    DEGsMatrix <- values$DEGsMatrix
     labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-    DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     filas <- rownames(DEGsMatrix)
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
     DEGsMatrixML <- t(DEGsMatrix)
     
     set.seed(31415)
-    indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
+    indices <- reactive(createDataPartition(labels, p = input$trn_percentage / 100, list = FALSE))
     particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
     
     particion.entrenamiento <- reactive(particion()$training)
@@ -655,8 +657,8 @@ server <- function(input, output){
          w7$show()
          
          # Load data
+         DEGsMatrix <- values$DEGsMatrix
          labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
          filas <- rownames(DEGsMatrix)
          DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
          rownames(DEGsMatrix) <- filas
@@ -686,8 +688,8 @@ server <- function(input, output){
          w7$show()
          
          # Load data
+         DEGsMatrix <- values$DEGsMatrix
          labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-         DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
          filas <- rownames(DEGsMatrix)
          DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
          rownames(DEGsMatrix) <- filas
@@ -716,8 +718,8 @@ server <- function(input, output){
        w7$show()
        
        # Load data
+       DEGsMatrix <- values$DEGsMatrix
        labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
-       DEGsMatrix <- as.data.frame(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
        filas <- rownames(DEGsMatrix)
        DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
        rownames(DEGsMatrix) <- filas
@@ -741,8 +743,37 @@ server <- function(input, output){
        return(dataviz)}
    )
    
-})
+     output$dataviz_tsne <- renderPlot(
+       {
+         w7$show()
+         
+         # Load data
+         DEGsMatrix <- values$DEGsMatrix
+         labels <- as.vector(t(read.csv2(file = input$file_labels$datapath)))
+         filas <- rownames(DEGsMatrix)
+         DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
+         rownames(DEGsMatrix) <- filas
+         
+         if(input$fs_algorithm_dataviz == "mRMR"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 1]
+         }
+         
+         if(input$fs_algorithm_dataviz == "RF"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 2]
+         }
+         
+         if(input$fs_algorithm_dataviz == "DA"){
+           ranking <- values$ranking[1:input$number_genes_dataviz, 3]
+         }
+         
+         dataviz <- tsne(DEGsMatrix[as.vector(t(ranking)),],labels=as.factor(labels), colvec = c("dodgerblue3", "hotpink3"),controlscale=TRUE, scale=3,seed = 3,dotsize = 10)
+         
+         w7$hide()
+         
+         return(dataviz)}
+     )
    
+})
    
    # Update maximum value for enrichment and dataviz sections
    max_genes <- reactive({
