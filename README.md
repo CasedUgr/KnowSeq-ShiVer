@@ -8,6 +8,14 @@ data using all the functionalities available at KnowSeq.
 *KnowSeq Shiver* is currently available at
 <https://knowseqshiver.shinyapps.io/KnowSeq-ShiVer/>
 
+Furthermore, if you want to take advantage of your own hardware, there is a Docker image available to deploy KnowSeq ShiVer in local without restriction. To use it just write:
+
+``` r
+docker push casedugr/knowseq-shiver 
+```
+
+And open the following url in your browser <http://localhost:3838>
+
 ## Abstract
 
 **Motivation**: The challenges of precision medicine must be faced to
