@@ -12,6 +12,8 @@ Furthermore, if you want to take advantage of your own hardware, there is a Dock
 
 ``` r
 docker push casedugr/knowseq-shiver 
+
+docker run -p 3838:3838 casedugr/knowseq-shiver
 ```
 
 And open the following url in your browser <http://localhost:3838>
