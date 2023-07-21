@@ -131,14 +131,6 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                             width = "100%"
                                   ),
                                 
-                                h3("Choose p-value for the DEGs extraction"),
-                                sliderInput("pvalue", label = "p-value", 
-                                            min = 0.00001, max = 0.01, value = 0.001, step = 0.0005), br(),
-                                
-                                h3("Choose LFC for the DEGs extraction"),
-                                sliderInput("lfc", label = "LFC", 
-                                            min = 1, max = 10, value = 1, step = 0.1), br(),
-
                                 h2("Step 2. Load labels"),
                                 
                                 fileInput(inputId = "file_labels",
@@ -153,6 +145,27 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                           width = "100%"
                                 ),
                                 
+                                
+                                h2("Step 3. Select the analysis parameters"),
+                                h3("Choose P-value for the DEGs extraction"),
+                                sliderInput("pvalue", label = "p-value", 
+                                            min = 0.00001, max = 0.01, value = 0.001, step = 0.0005), 
+                                
+                                h3("Choose LFC for the DEGs extraction"),
+                                sliderInput("lfc", label = "LFC", 
+                                            min = 1, max = 10, value = 1, step = 0.1),
+                                h3("It is a Multiclass study?"),
+                                # Adding a checkbox input with an initial value of FALSE (not selected)
+                                checkboxInput("multiclass", "Multiclass Study", value = FALSE),
+                                conditionalPanel(condition = "input.multiclass",
+                                  h3("Insert the number of classes to calculate the maximum possible value for the Coverage:"),
+                                  numericInput("input_classes", "Enter the number of classes:", ""),
+                                  actionButton("submit_classes", "Calculate"),br(),
+                                  conditionalPanel(condition = "input.submit_classes!=0",
+                                  textOutput("max_cov"),
+                                  h3("Choose Coverage for the Multiclass DEGs extraction"),
+                                  sliderInput(inputId = "numero_cov", label = "Select the cov parameter value", value = 10, min = 1, max = 100, step = 1, width = "50%")),
+                                ),
                                 actionButton(inputId = "boton_importar",
                                              label = "Import files and extract DEGs",
                                              icon = icon("fas fa-file-import", lib = "font-awesome"),
@@ -164,18 +177,16 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                 h1("Data Summary"),
                                 # If data is loaded, you can proceed
                                 conditionalPanel(condition = "input.boton_importar!=0",
-                                                 conditionalPanel(condition = "input.boton_importar!=0",
-                                                                  
-                                                                  h5("Distribution of classes"),
-                                                                  
-                                                                  tableOutput("tabla1"),
-                                                                  
-                                                                  h5(textOutput("degs_number")),
-                                                                  
-                                                                  h5("Table of DEGs"),
-                                                                  
-                                                                  dataTableOutput("degs_datatable")
-                                                 ),
+
+                                    h5("Distribution of classes"),
+                                    
+                                    tableOutput("tabla1"),
+                                    
+                                    h5(textOutput("degs_number")),
+                                    
+                                    h5("Table of DEGs"),
+                                    
+                                    dataTableOutput("degs_datatable")
 
                                 ),
                                 # If not, the app tells you to load data

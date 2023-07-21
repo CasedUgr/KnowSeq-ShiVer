@@ -1,5 +1,5 @@
-# 300MB as limit size
-options(shiny.maxRequestSize=300*1024^2)
+# 1Gb as limit size
+options(shiny.maxRequestSize=1024*1024^2)
 
 
 library(KnowSeq)
@@ -10,6 +10,9 @@ library(caret)
 library(ggplot2)
 library(ggalluvial)
 library(M3C)
+
+loadedColours = c("darkred", "forestgreen", "darkorchid3", "dodgerblue3", "darkolivegreen", "darkgoldenrod2",
+            "coral4", "aquamarine3","chocolate2","deeppink","lawngreen","hotpink3","midnightblue","saddlebrown")
 
 # Define some spinners
 spinner_abrir <- tagList(
@@ -23,7 +26,7 @@ spinner <- tagList(
 )
 
 
-server <- function(input, output){
+server <- function(input, output, session){
   
   values <- reactiveValues(ranking = NULL, optimalSVM_train = NULL, optimalkNN_train = NULL, optimalrf_train = NULL,
                            DEGsMatrix = NULL, DEGs = NULL)
@@ -55,13 +58,13 @@ server <- function(input, output){
       expressionMatrix <- as.matrix(read.csv2(file = input$file_Matrix$datapath, row.names = 1))
     }
   
-    DEGsInformation <- DEGsExtraction(expressionMatrix, as.factor(labels),
-                                      lfc = input$lfc,
-                                      # p-valor
-                                      pvalue = input$pvalue,
-                                      #number = 200
-                                      )
-    DEGsMatrix <- DEGsInformation$DEG_Results$DEGs_Matrix
+    if(!input$multiclass){
+      DEGsInformation <- DEGsExtraction(expressionMatrix, as.factor(labels),lfc = input$lfc,pvalue = input$pvalue)
+      DEGsMatrix <- DEGsInformation$DEG_Results$DEGs_Matrix
+    }else{
+      DEGsInformation <- DEGsExtraction(expressionMatrix, as.factor(labels),lfc = input$lfc,pvalue = input$pvalue, cov = input$numero_cov)
+      DEGsMatrix <- DEGsInformation$DEG_Results$DEGs_Matrix
+    }
     
     # Read DEGsMatrix
     filas <- rownames(DEGsMatrix)
@@ -77,17 +80,17 @@ server <- function(input, output){
     
     w2$hide()
     
+    # Message if file is correctly imported
+    showModal(modalDialog(
+      h3(icon("check-circle", lib = "font-awesome", class = "fa-1x"),
+         " Files imported correctly"),
+      easyClose = TRUE,
+      footer = NULL
+    ))
+    
     # Table
     output$tabla1 <- renderTable({
       if(is.null(input$file_labels)) return(NULL)
-      
-      # Message if file is correctly imported
-      showModal(modalDialog(
-        h3(icon("check-circle", lib = "font-awesome", class = "fa-1x"),
-           " Files imported correctly"),
-        easyClose = TRUE,
-        footer = NULL
-      ))
       
       tabla_aux <- as.data.frame(table(labels)) %>% rename(Label = labels, Samples = Freq)
       return(tabla_aux)
@@ -96,13 +99,32 @@ server <- function(input, output){
     output$degs_number <- renderText(paste(nrow(DEGsInformation$DEG_Results$DEGs_Table),
                                            "DEGs were extracted."))
     
-    output$degs_datatable <- renderDataTable(
-      {
-        return(DEGsInformation$DEG_Results$DEGs_Table)}
-      , filter = "top", rownames = TRUE, options = list(pageLength = 25)
-    )
+    if(!input$multiclass){
+      output$degs_datatable <- renderDataTable(
+        {
+          return(DEGsInformation$DEG_Results$DEGs_Table)}
+        , filter = "top", rownames = TRUE, options = list(pageLength = 25)
+      )
+    }else{
+      output$degs_datatable <- renderDataTable(
+        {
+          return(DEGsInformation$DEG_Results$MulticlassLFC)}
+        , filter = "top", rownames = TRUE, options = list(pageLength = 25)
+      )
+    }
 
   }) # Close import button
+  
+  # Observe the changes in the numericInput and update the max value of the slider
+  observe({
+    updateSliderInput(session, "numero_cov", max = (input$input_classes^2 - input$input_classes)/2)
+  })
+  
+  # Reactive expression to display the cov max number when the calculate button is clicked
+  output$max_cov <- renderText({
+    input$submit_classes
+    isolate(paste("The maximun value for the coverage value is equal to: ", (input$input_classes^2 - input$input_classes)/2,""))  # isolate the input to avoid reactivity issues
+  })
   
   
   # Server of tab: Genes selection ------
@@ -619,7 +641,7 @@ server <- function(input, output){
            ranking <- values$ranking[1:input$number_genes_dataviz, 3]
          }
          
-         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "heatmap")
+         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "heatmap", colours = loadedColours[1:length(unique(as.factor(labels)))])
          
          w7$hide()
          
@@ -650,7 +672,7 @@ server <- function(input, output){
            ranking <- values$ranking[1:min(input$number_genes_dataviz, 25), 3]
          }
          
-         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot")
+         dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot", colours = loadedColours[1:length(unique(as.factor(labels)))])
          
          w7$hide()
          
@@ -680,7 +702,7 @@ server <- function(input, output){
          ranking <- values$ranking[26:input$number_genes_dataviz, 3]
        }
        
-       dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot")
+       dataviz <- dataPlot(DEGsMatrix[as.vector(t(ranking)), ], labels, mode = "genesBoxplot", colours = loadedColours[1:length(unique(as.factor(labels)))])
        
        w7$hide()
        
@@ -710,7 +732,7 @@ server <- function(input, output){
            ranking <- values$ranking[1:input$number_genes_dataviz, 3]
          }
          
-         dataviz <- tsne(DEGsMatrix[as.vector(t(ranking)),],labels=as.factor(labels), colvec = c("dodgerblue3", "hotpink3"),controlscale=TRUE, scale=3,seed = 3,dotsize = 10)
+         dataviz <- tsne(DEGsMatrix[as.vector(t(ranking)),],labels=as.factor(labels), colvec = loadedColours[1:length(unique(as.factor(labels)))],controlscale=TRUE, scale=3,seed = 3,dotsize = 10)
          
          w7$hide()
          

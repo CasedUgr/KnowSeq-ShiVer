@@ -4,7 +4,7 @@ set.seed(31415)
 
 # ----- Ruta de trabajo -----
 
-setwd("analisis_higado_data")
+# setwd("example_data/analisis_higado_data")
 
 # ----- Carga de paquetes -----
 

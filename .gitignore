@@ -4,3 +4,6 @@
 .Ruserdata
 rsconnect
 KnowSeq-ShiVer.Rproj
+example_data/liver_expressionMatrix.csv
+example_data/lung_expressionMatrix.csv
+example_data/lung_labels.csv
