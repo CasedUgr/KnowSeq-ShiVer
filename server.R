@@ -77,18 +77,6 @@ server <- function(input, output){
     
     w2$hide()
     
-    # Train-test partition
-    # set.seed(31415)
-    # indices <- reactive(createDataPartition(labels, p = input$porcentaje_entrenamiento / 100, list = FALSE))
-    # particion <- reactive(list(training = DEGsMatrixML[indices(), ], test = DEGsMatrixML[-indices(), ]))
-    # 
-    # particion.entrenamiento <- reactive(particion()$training)
-    # particion.test <- reactive(particion()$test)
-    # 
-    # # Labels
-    # labels_train <- reactive(labels[indices()])
-    # labels_test  <- reactive(labels[-indices()])
-    
     # Table
     output$tabla1 <- renderTable({
       if(is.null(input$file_labels)) return(NULL)
@@ -113,52 +101,7 @@ server <- function(input, output){
         return(DEGsInformation$DEG_Results$DEGs_Table)}
       , filter = "top", rownames = TRUE, options = list(pageLength = 25)
     )
-    
-  
-    # output$sankey <- renderPlot({
-    #   if(is.null(input$file_labels)) return(NULL)
-    #   
-    #   # Train
-    #   #table(labels_train)
-    #   entr_tum <- table(labels_train())[1]
-    #   entr_san <- table(labels_train())[2]
-    #   
-    #   # Test
-    #   #table(labels_test)
-    #   test_tum <- table(labels_test())[1]
-    #   test_san <- table(labels_test())[2]
-    #   
-    #   # Sankey diagram
-    #   datos_sankey <- data.frame(tipo = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Tumour\n", entr_tum + test_tum, " cases"),
-    #                                       paste0("Normal tissue\n", entr_san + test_san, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
-    #                              traintest = c(paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
-    #                                            paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue"),
-    #                                            paste0("Train\n", entr_tum, " tumour\n", entr_san, " normal tissue"),
-    #                                            paste0("Test\n", test_tum, " tumour\n", test_san, " normal tissue")),
-    #                              value = c(entr_tum, test_tum, entr_san, test_san))
-    #   
-    #   # Reordering types
-    #   datos_sankey$tipo <- factor(datos_sankey$tipo,
-    #                               levels = c(paste0("Tumour\n", entr_tum + test_tum, " cases"), paste0("Normal tissue\n", entr_san + test_san, " cases")),
-    #                               ordered = T)
-    #   
-    #   ggplot(data = datos_sankey,
-    #          aes(axis1 = tipo, axis2 = traintest, y = value, label = after_stat(stratum))) +
-    #     scale_x_discrete(limits = c("Type of sample", "Train-test"),
-    #                      expand = c(.1, .05)) +
-    #     ylab("") +
-    #     geom_alluvium(col = "black", alpha = 1) +
-    #     geom_alluvium(aes(fill = tipo), alpha = .6, show.legend = FALSE) +
-    #     geom_stratum() +
-    #     geom_text(stat = "stratum", cex = 3) +
-    #     theme_minimal() +
-    #     ggtitle("Train-test partition") +
-    #     theme(plot.title = element_text(hjust = .5),
-    #           axis.text = element_text(color = "black", margin = margin(t = -30), size = 12),
-    #           axis.text.y = element_blank(),
-    #           axis.ticks = element_blank(),
-    #           panel.grid = element_blank()) 
-    # })
+
   }) # Close import button
   
   
@@ -175,6 +118,7 @@ server <- function(input, output){
     DEGsMatrix <- apply(DEGsMatrix, 2, as.numeric)
     rownames(DEGsMatrix) <- filas
     DEGsMatrixML <- t(DEGsMatrix)
+    
     
     set.seed(31415)
     indices <- reactive(createDataPartition(labels, p = input$trn_percentage / 100, list = FALSE))
@@ -215,14 +159,14 @@ server <- function(input, output){
     w$show()
     daRanking <- NULL
     
-    daRanking <- featureSelection(particion.entrenamiento(), labels_train(), colnames(particion.entrenamiento()),
+    daRanking <- featureSelection(particion.entrenamiento()[,1:input$numero_genes], labels_train(), colnames(particion.entrenamiento()[,1:input$numero_genes]),
                                   mode = "da", disease = input$disease_da)
     daRanking <- names(daRanking)
     
     # If there has been any problem in the API call, it's repeated after a 3 second break
     while(is.null(daRanking)){
       Sys.sleep(3)
-      daRanking <- featureSelection(particion.entrenamiento(), labels_train(), colnames(particion.entrenamiento()),
+      daRanking <- featureSelection(particion.entrenamiento()[,1:input$numero_genes], labels_train(), colnames(particion.entrenamiento()[,1:input$numero_genes]),
                                     mode = "da", disease = input$disease_da)
       daRanking <- names(daRanking)
     }

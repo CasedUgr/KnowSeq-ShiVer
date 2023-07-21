@@ -31,6 +31,7 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                       sidebarMenu(
                         menuItem("Introduction", tabName = "intro", icon = icon("file-alt")),
                         menuItem("Data loading", tabName = "data", icon = icon("database")),
+                        menuItem("Data summary", tabName = "summary", icon = icon("clipboard")),
                         menuItem("Genes selection", tabName = "genes", icon = icon("dna")),
                         menuItem("Machine learning", icon = icon("laptop-code"),
                                  menuSubItem("Model training", tabName = "training", icon = icon("play")),
@@ -157,41 +158,30 @@ ui <- dashboardPage(title = "KnowSeq ShiVer", # Title in web browser
                                              icon = icon("fas fa-file-import", lib = "font-awesome"),
                                              width = "100%"),
                                 br(),
-                                
+                        ),
+                        # Tab 3
+                        tabItem(tabName = "summary",
+                                h1("Data Summary"),
+                                # If data is loaded, you can proceed
                                 conditionalPanel(condition = "input.boton_importar!=0",
-                                                 
-                                                 h5("Distribution of classes"),
-                                                 
-                                                 tableOutput("tabla1"),
-                                                 
-                                                 h5(textOutput("degs_number")),
-                                                 
-                                                 h5("Table of DEGs"),
-                                                 
-                                                 dataTableOutput("degs_datatable")
-                                                 
-                                                 
+                                                 conditionalPanel(condition = "input.boton_importar!=0",
+                                                                  
+                                                                  h5("Distribution of classes"),
+                                                                  
+                                                                  tableOutput("tabla1"),
+                                                                  
+                                                                  h5(textOutput("degs_number")),
+                                                                  
+                                                                  h5("Table of DEGs"),
+                                                                  
+                                                                  dataTableOutput("degs_datatable")
+                                                 ),
+
                                 ),
-                                
-                        #         conditionalPanel(condition = "input.boton_importar!=0",
-                        #                          
-                        #                          
-                        #                          
-                        #                          
-                        #                          #h2("Train-test partition"),
-                        #                          
-                        #                          # Ver qué hacer con esto
-                        #                          # sliderInput("porcentaje_entrenamiento",
-                        #                          #             label = "Train percentage (%)",
-                        #                          #             value = 75, min = 5, max = 95, step = 5,
-                        #                          #             width = "100%"
-                        #                          # )
-                        #                          
-                        #                          
-                        #                          # h2("Sankey plot"),
-                        #                          # plotOutput("sankey", width = "100%")
-                        #                          )
-                        #         
+                                # If not, the app tells you to load data
+                                conditionalPanel(condition = "input.boton_importar==0",
+                                                 h3("First you need to load data in ''Data loading''", style = "color: #D95032")
+                                )
                         ),
                         
                         # Tab 3
